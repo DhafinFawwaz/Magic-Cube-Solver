@@ -106,9 +106,6 @@ export class CubeState {
         let j2 = Math.floor(Math.random() * n);
         let k2 = Math.floor(Math.random() * n);
         this.swap(i1, j1, k1, i2, j2, k2);
-
-        this.from = [i1, j1, k1];
-        this.to = [i2, j2, k2];
     }
 
     cachedMaxAmountOfMagic: number = -1;
@@ -434,7 +431,7 @@ export class CubeState {
 
 
     static pairsCache: {[key: number]: [number[], number[]][]} = {};
-    static getCubeSwapPairs(n: number): [number[], number[]][] {
+    public static getCubeSwapPairs(n: number): [number[], number[]][] {
         if(CubeState.pairsCache[n]) return CubeState.pairsCache[n];
         
         const arr = [];
