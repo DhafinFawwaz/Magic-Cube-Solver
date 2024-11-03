@@ -11,6 +11,8 @@ import { inverseLerp, lerp } from "three/src/math/MathUtils.js";
 
 export class SolverAnimator {
     gap = 0.5;
+    iterationDuration = 0.5;
+
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
@@ -69,7 +71,7 @@ export class SolverAnimator {
         if(this.isPlaying) {
             if(this.slider !== undefined) {
                 const currentTime = performance.now();
-                const t = (currentTime - this.startTime) / 1000;
+                const t = (currentTime - this.startTime) / 1000 / this.cubeStateList.length / this.iterationDuration;
                 this.slider.value = t.toString();
                 this.setNormalizedTime(t);
             }
@@ -94,7 +96,6 @@ export class SolverAnimator {
     public setCube(cubeState: CubeState) {
         this.currentCubeState = cubeState;
         this.textList = [];
-        const gap = this.gap;
         for(let i = 0; i < this.currentCubeState.content.length; i++) {
             for(let j = 0; j < this.currentCubeState.content.length; j++) {
                 for(let k = 0; k < this.currentCubeState.content.length; k++) {
@@ -107,14 +108,12 @@ export class SolverAnimator {
             }
         }
     }
-    public removeCube() {
-    }
 
     isPlaying = false;
     startTime = -1;
     public play() {
         this.isPlaying = true;
-        this.startTime = performance.now();
+        this.startTime = performance.now() - this.slider!.valueAsNumber * 1000 * this.cubeStateList.length * this.iterationDuration;
     }
 
     public pause() {
@@ -134,12 +133,13 @@ export class SolverAnimator {
         return [x, y, z];
     }
 
-    public syncCube(cubeState: CubeState) {
-        const gap = this.gap;
+    public setTransparentCube(cubeState: CubeState) {
         for(let i = 0; i < cubeState.content.length; i++) {
             for(let j = 0; j < cubeState.content.length; j++) {
                 for(let k = 0; k < cubeState.content.length; k++) {
-                    const text = NumberText.get(cubeState!.content[i][j][k].toString());
+                    const key = cubeState!.content[i][j][k].toString();
+                    const text = NumberText.get(key);
+                    text.material = NumberText.transparentMaterial;
                     const [x,y,z] = this.ijkToWorldPosition(i, j, k, cubeState);
                     text.position.set(x,y,z);
                 }
@@ -153,12 +153,12 @@ export class SolverAnimator {
 
         const currentIdx = Math.floor(t * this.cubeStateList.length);
         if(currentIdx >= this.cubeStateList.length) return;
-        if(currentIdx <= 0) return;
+        if(currentIdx < 0) return;
 
         const cubeState = this.cubeStateList[currentIdx];
         const from = cubeState.from!;
         const to = cubeState.to!;
-        this.syncCube(cubeState);
+        this.setTransparentCube(cubeState);
         
         const fromVal = cubeState.content[from[0]][from[1]][from[2]];
         const toVal = cubeState.content[to[0]][to[1]][to[2]];
@@ -166,14 +166,17 @@ export class SolverAnimator {
         const fromText = NumberText.get(fromVal.toString());
         const toText = NumberText.get(toVal.toString());
 
+        fromText.material = NumberText.tintedTextFromMaterial;
+        toText.material = NumberText.tintedTextToMaterial;
+
         const [fromX, fromY, fromZ] = this.ijkToWorldPosition(from[0], from[1], from[2], cubeState);
         const [toX, toY, toZ] = this.ijkToWorldPosition(to[0], to[1], to[2], cubeState);
 
         const startTime = (currentIdx-1) / this.cubeStateList.length;
         const endTime = (currentIdx) / this.cubeStateList.length;
-        const tProgress = inverseLerp(startTime, endTime, t);
-        fromText.position.lerpVectors(new THREE.Vector3(fromX, fromY, fromZ), new THREE.Vector3(toX, toY, toZ), this.easeOutQuart(tProgress));
-        toText.position.lerpVectors(new THREE.Vector3(toX, toY, toZ), new THREE.Vector3(fromX, fromY, fromZ), this.easeOutQuart(tProgress));
+        const tProgress = inverseLerp(startTime, endTime, t)-1;
+        fromText.position.lerpVectors(new THREE.Vector3(toX, toY, toZ), new THREE.Vector3(fromX, fromY, fromZ), this.easeOutQuart(tProgress));
+        toText.position.lerpVectors(new THREE.Vector3(fromX, fromY, fromZ), new THREE.Vector3(toX, toY, toZ), this.easeOutQuart(tProgress));
     }
 
 }

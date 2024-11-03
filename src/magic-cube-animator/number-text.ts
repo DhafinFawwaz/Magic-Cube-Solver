@@ -17,7 +17,10 @@ export class NumberText {
     static isLoaded = false;
 
     static textMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
-    static outlineMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side: THREE.BackSide});
+    static tintedTextFromMaterial = new THREE.MeshLambertMaterial({color: 0x00ffff});
+    static tintedTextToMaterial = new THREE.MeshLambertMaterial({color: 0x0000ff});
+    static transparentMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0.15});
+    static outlineMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side: THREE.BackSide, transparent: true, opacity: 0.5});
 
     public static load(onLoaded: () => void) {
         const loader = new FontLoader();

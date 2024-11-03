@@ -8,44 +8,35 @@ import { SimulatedAnnealingSolver } from './magic-cube/solver/simulatedannealing
 import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomrestarthillclimbing-solver'
 import { SolverAnimator } from './magic-cube-animator/solver-animator'
 
+function readDegree() { return Number.parseInt(( document.getElementById('degree') as HTMLInputElement ).value); }
+function createCube(degree: number) { return CubeState.createRandomCube(degree) }
+function readAlgorithmIdx() { return Number.parseInt(( document.getElementById('algorithm-select') as HTMLSelectElement ).value); }
 
+let currentCube = createCube(5);
 const solverAnimator = new SolverAnimator(document.getElementById("3d-view")!);
-
-function readDegree() {
-  const degree = Number.parseInt(( document.getElementById('degree') as HTMLInputElement ).value);
-  return degree
-}
-
-function createCube(degree: number) {
-  const cube = CubeState.createRandomCube(degree)
-  return cube
-}
+solverAnimator.load(() => {
+  solverAnimator.setCube(currentCube);
+});
 
 const solverList = [
-  () => new SteepestAscentSolver(createCube(readDegree())),
-  () => new SidewaysMoveSolver(createCube(readDegree())),
-  () => new RandomRestartHillClimbingSolver(createCube(readDegree())),
-  () => new StochasticSolver(createCube(readDegree()), (e) => solverAnimator.onStateChange(e)),
-  () => new SimulatedAnnealingSolver(createCube(readDegree())),
-  () => undefined, // () => new GeneticSolver(readDegree()),
+  () => new SteepestAscentSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SidewaysMoveSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new RandomRestartHillClimbingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new StochasticSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => undefined, // () => new GeneticSolver(readDegree(), (e) => solverAnimator.onStateChange(e)),
 ]
 let selectedSolver = solverList[0]();
 
-// const logMessageDiv = document.getElementById('log-message');
-// Solver.logConsoleEnabled = false;
-// Solver.onLog = (msg: string[]) => {
-//   logMessageDiv!.textContent = msg.join("");
-// }
+
 const sliderContainer = document.getElementById('slider-container');
 const playpauseCheckbox: HTMLInputElement = document.getElementById('playpause') as HTMLInputElement;
 const slider: HTMLInputElement = document.getElementById('slider')! as HTMLInputElement;
 solverAnimator.slider = slider;
 
-document.getElementById('algorithm-select')?.addEventListener('change', (event) => {
-  const algorithmIdx: number = Number.parseInt((event.target as HTMLSelectElement).value)
-  selectedSolver = solverList[algorithmIdx]();
+document.getElementById('algorithm-select')?.addEventListener('change', () => {
+  selectedSolver = solverList[readAlgorithmIdx()]();
 });
-
 
 document.getElementById('start-button')?.addEventListener('click', async() => {
   sliderContainer?.classList.remove('flex');
@@ -55,9 +46,11 @@ document.getElementById('start-button')?.addEventListener('click', async() => {
   solverAnimator.clearAnimationStateList();
 
   setTimeout(() => {
+    console.log("Problem:")
+    console.log(currentCube)
     const solver: Solver = selectedSolver!;
     const result = solver.solve()
-    console.log("\nSolution:")
+    console.log("Solution:")
     console.log(result)
   
     sliderContainer?.classList.remove('hidden');
@@ -71,13 +64,12 @@ document.getElementById('generate-button')?.addEventListener('click', () => {
     alert("Degree must be greater than 1");
     return;
   }
-  const cube = createCube(readDegree());
-  solverAnimator.setCube(cube);
+  currentCube = createCube(readDegree());
+  solverAnimator.setCube(currentCube);
   solverAnimator.clearAnimationStateList();
+  selectedSolver = solverList[readAlgorithmIdx()]();
 })
-solverAnimator.load(() => {
-  solverAnimator.setCube(createCube(5));
-});
+
 
 playpauseCheckbox?.addEventListener('change', (event) => {
   if((event.target as HTMLInputElement).checked) {
