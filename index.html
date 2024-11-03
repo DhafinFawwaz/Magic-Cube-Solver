@@ -11,27 +11,48 @@
     
     <title>Magic Cube Solver</title>
   </head>
-  <body class="bg-zinc-950">
+  <body class="bg-zinc-900">
     <div id="3d-view">
 
     </div>
-    <div class="absolute grid grid-rows-2 gap-2 bg-zinc-800 p-2 rounded-tr-xl">
+    <div class="fixed top-0 right-0 grid grid-rows-2 gap-2 bg-zinc-900 p-2 rounded-bl-xl drop-shadow-lg">
       
-      <select class="cursor-pointer rounded-lg bg-zinc-700 text-slate-50 pl-2.5" name="Algorithm" id="algorithm-select">
-        <option class="cursor-pointer" value=0>Steepest Ascent</option>
-        <option class="cursor-pointer" value=1>Steepest Ascent with Sideways</option>
-        <option class="cursor-pointer" value=2>Random Restart</option>
-        <option class="cursor-pointer" value=3>Stochastic</option>
-        <option class="cursor-pointer" value=4>Simulated Annealing</option>
-        <option class="cursor-pointer" value=5>Genetic</option>
-      </select>
-      
-      <div class="flex gap-2 ">
-        <input class="cursor-text rounded-lg pl-2.5 w-40 bg-zinc-700 text-slate-50" id="degree" type="number" value="5">
-        <button id="start-button" class="bg-indigo-600 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer">Solve</button>
+      <div>
+        <div class="text-sm text-slate-50 mb-1">Algorithm</div>
+        <select class="cursor-pointer rounded-lg bg-zinc-800 text-slate-50 text-sm pl-2.5 outline-none focus:ring-1 hover:ring-1 ring-indigo-700 h-8" name="Algorithm" id="algorithm-select">
+          <option class="cursor-pointer" value=0>Steepest Ascent</option>
+          <option class="cursor-pointer" value=1>Steepest Ascent with Sideways</option>
+          <option class="cursor-pointer" value=2>Random Restart</option>
+          <option class="cursor-pointer" value=3>Stochastic</option>
+          <option class="cursor-pointer" value=4>Simulated Annealing</option>
+          <option class="cursor-pointer" value=5>Genetic</option>
+        </select>
       </div>
+      
+      <div>
+        <div class="text-sm text-slate-50 mb-1">Degree</div>
+        <div class="flex gap-2 h-8">
+          <input class="cursor-text text-sm rounded-lg pl-2.5 w-32 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5">
+          <button id="generate-button" class="bg-indigo-600 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer">Generate</button>
+        </div>
+      </div>
+      <button id="start-button" class="bg-indigo-600 h-8 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer mt-1.5">Solve</button>
 
     </div>
+
+
+    <!-- <div class="fixed top-0 grid bg-zinc-900 p-2 rounded-br-xl drop-shadow-lg w-64">
+      <div class="text-sm text-slate-50" id="log-message">[Status]</div>
+    </div> -->
+
+    <div id="slider-container" class="fixed bottom-0 gap-2 bg-zinc-900 p-2 drop-shadow-lg w-full hidden">
+      <div class="playpause flex scale-75">
+        <input type="checkbox" value="None" id="playpause" name="check" hidden checked/>
+        <label for="playpause" tabindex=1></label>
+      </div>  
+      <input id="slider" type="range" class="w-full" min="0" max="1" step="0.00000001" value="0">
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

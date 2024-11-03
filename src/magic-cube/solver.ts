@@ -4,7 +4,7 @@ export type Evaluator = (cube: CubeState) => number;
 export type CubeStateChangeCallback = (cube: CubeState) => void;
 
 export abstract class Solver {
-    public static logEnabled = true;
+    public static logConsoleEnabled = true;
     protected evaluator: Evaluator;
     protected onStateChange?: CubeStateChangeCallback;
     public constructor(onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
@@ -36,12 +36,17 @@ export abstract class Solver {
         return magicCount
     }
 
+
+    static onLog: (msg: string[]) => void = () => {};
+
     protected log(startTime: number, current: CubeState, evaluator: Evaluator, iteration?: number, nMax?: number) {
-        if(!Solver.logEnabled) return;
-        
         const msg = ["Time:", (performance.now() - startTime).toFixed(2) + " ms", "| Magic:", Solver.evaluateMagicAmount(current) + "/" + current.maxAmountOfMagic, "| Score:", evaluator(current).toFixed(2)];
         if(iteration !== undefined && nMax !== undefined) 
             msg.push("| Iteration:", iteration + "/" + nMax);
+        
+        Solver.onLog(msg);
+        
+        if(!Solver.logConsoleEnabled) return;
         console.log(...msg);
     }
 

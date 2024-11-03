@@ -5,3 +5,35 @@
 html {
     font-family: 'outfit', sans-serif;
 }
+
+canvas {
+    @apply absolute block;
+}
+
+
+.playpause {
+    label {
+        display: block;
+        box-sizing: border-box;
+        
+        width: 0;
+        height: 24px;
+        
+        cursor: pointer;
+
+        border-color: transparent transparent transparent #ffffff;
+        transition: 100ms all ease;
+        will-change: border-width;
+        
+        border-style: double;
+        border-width: 0px 0 0px 20px;
+    }
+    input[type='checkbox'] {
+        visibility: hidden;
+        
+        &:checked + label {
+            border-style: solid;
+            border-width: 12px 0 12px 20px;
+        }
+    }
+}
