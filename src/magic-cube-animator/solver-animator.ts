@@ -93,13 +93,21 @@ export class SolverAnimator {
         this.cubeStateList = [];
     }
 
+    clearAllTextInScene() {
+        this.scene.clear();
+        this.scene.add(this.directionalLight);
+        this.scene.add(this.ambientLight);
+    }
+
     public setCube(cubeState: CubeState) {
         this.currentCubeState = cubeState;
         this.textList = [];
+        this.clearAllTextInScene();
         for(let i = 0; i < this.currentCubeState.content.length; i++) {
             for(let j = 0; j < this.currentCubeState.content.length; j++) {
                 for(let k = 0; k < this.currentCubeState.content.length; k++) {
                     const text = NumberText.get(cubeState!.content[i][j][k].toString());
+                    text.material = NumberText.textMaterial;
                     const [x,y,z] = this.ijkToWorldPosition(i, j, k, cubeState);
                     text.position.set(x,y,z);
                     this.scene.add(text);
