@@ -1,12 +1,8 @@
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { CubeState } from "../magic-cube/cube-state";
 import * as THREE from 'three';
 import { NumberText } from "./number-text";
-import { inverseLerp, lerp } from "three/src/math/MathUtils.js";
-
-
+import { inverseLerp } from "three/src/math/MathUtils.js";
 
 
 export class SolverAnimator {
