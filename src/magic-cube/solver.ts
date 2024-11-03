@@ -1,6 +1,7 @@
 import { CubeState } from "./cube-state";
 
 type Evaluator = (cube: CubeState) => number;
+type CubeStateChangeCallback = (cube: CubeState) => void;
 
 export class Solver {
 
@@ -33,7 +34,7 @@ export class Solver {
     }
 
     static stochasticNMax = 100000;
-    public static solveStochastic(cube: CubeState, evaluator: Evaluator = this.evaluateDeviationSqrt): CubeState {
+    public static solveStochastic(cube: CubeState, evaluator: Evaluator = this.evaluateDeviationSqrt, onStateChange?: CubeStateChangeCallback): CubeState {
         let startTime = performance.now()
 
         let current = cube.getCopy()
@@ -41,7 +42,8 @@ export class Solver {
         let iteration = 0
         while (!current.isMagicCube() && iteration < nMax) {
             iteration++;
-            let neighbor = current.getRandomSuccessor()
+            const neighbor = current.getRandomSuccessor()
+            onStateChange?.(neighbor)
 
             if (evaluator(neighbor) > evaluator(current)) {
                 current = neighbor

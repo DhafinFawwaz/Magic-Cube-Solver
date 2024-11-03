@@ -1,5 +1,12 @@
+
 export class CubeState {
     public content: number[][][] = [];
+    
+    /**
+     * Used for the visualization
+     */
+    public from?: number[];
+    public to?: number[];
 
     /**
      * 
@@ -67,6 +74,8 @@ export class CubeState {
     public getCopy(): CubeState {
         let state = new CubeState();
         state.content = this.content.map(x => x.map(y => y.map(z => z)));
+        state.from = this.from;
+        state.to = this.to;
         return state;
     }
 
@@ -94,6 +103,9 @@ export class CubeState {
         let j2 = Math.floor(Math.random() * n);
         let k2 = Math.floor(Math.random() * n);
         this.swap(i1, j1, k1, i2, j2, k2);
+
+        this.from = [i1, j1, k1];
+        this.to = [i2, j2, k2];
     }
 
     cachedMaxAmountOfMagic: number = -1;
