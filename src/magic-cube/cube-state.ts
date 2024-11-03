@@ -92,6 +92,9 @@ export class CubeState {
         let temp = this.content[i1][j1][k1];
         this.content[i1][j1][k1] = this.content[i2][j2][k2];
         this.content[i2][j2][k2] = temp;
+        
+        this.from = [i1, j1, k1];
+        this.to = [i2, j2, k2];
     }
 
     public swapRandom(): void {
@@ -424,4 +427,33 @@ export class CubeState {
 
         return true;
     }
+
+    
+
+
+
+
+    static pairsCache: {[key: number]: [number[], number[]][]} = {};
+    static getCubeSwapPairs(n: number): [number[], number[]][] {
+        if(CubeState.pairsCache[n]) return CubeState.pairsCache[n];
+        
+        const arr = [];
+        for(let i = 0; i < n; i++) {
+            for(let j = 0; j < n; j++) {
+                for(let k = 0; k < n; k++) {
+                    arr.push([i, j, k]);
+                }
+            }
+        }
+        const pairs: [number[], number[]][] = [];
+        for(let i = 0; i < arr.length - 1; i++) {
+            for(let j = i+1; j < arr.length; j++) {
+                pairs.push([arr[i], arr[j]]);
+            }
+        }
+
+        CubeState.pairsCache[n] = pairs;
+        return pairs;
+    }
+
 }

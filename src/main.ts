@@ -13,7 +13,7 @@ function start() {
   console.log(magicNumber)
   
   console.log("\nSolution:")
-  const result = Solver.solveStochastic(cube) // Just swap this with any of the other solvers, can also pass custom evaluator
+  const result = Solver.solveSteepestAscent(cube) // Just swap this with any of the other solvers, can also pass custom evaluator
   console.log(result)
 }
 
