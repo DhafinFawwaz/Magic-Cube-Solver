@@ -4,10 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
     <title>Magic Cube Solver</title>
   </head>
   <body>
     <div class="bg-blue-500">Magic Cube</div>
+
+    <input id="degree" type="number" value="5">
+
+    <select name="Algorithm" id="algorithm-select">
+      <option value=0>Steepest Ascent</option>
+      <option value=1>Steepest Ascent with Sideways</option>
+      <option value=2>Random Restart</option>
+      <option value=3>Stochastic</option>
+      <option value=4>Simulated Annealing</option>
+      <option value=5>Genetic</option>
+    </select>
+
     <button id="start-button" class="bg-slate-800 text-slate-50 px-3 py-1 rounded-lg">Start</button>
     <script type="module" src="/src/main.ts"></script>
   </body>

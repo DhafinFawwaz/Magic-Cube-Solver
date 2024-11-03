@@ -3,23 +3,46 @@ import { CubeState } from './magic-cube/cube-state'
 import { Solver } from './magic-cube/solver'
 import { StochasticSolver } from './magic-cube/solver/stochastic-solver'
 import { SteepestAscentSolver } from './magic-cube/solver/steepestascent-solver'
+import { SidewaysMoveSolver } from './magic-cube/solver/sidwaysmove-solver'
+import { SimulatedAnnealingSolver } from './magic-cube/solver/simulatedannealing-solver'
+import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomrestarthillclimbing-solver'
 
-function start() {
-  const degree = 5
-  const cube = CubeState.createRandomCube(degree)
-  const magicNumber = cube.calculateMagicNumber()
-  
-  console.log("Problem:")
-  console.log(cube)
-  console.log("Magic Number:")
-  console.log(magicNumber)
-  
-  console.log("\nSolution:")
-  const solver: Solver = new SteepestAscentSolver(cube);  // Just swap this with any of the other solvers, can also pass custom evaluator. constructor parameter for genetic is very different which is just the degree of the cube, which is why we're doing it like this.
-  const result = solver.solve()
-  console.log(result)
+
+function readDegree() {
+  const degree = Number.parseInt(( document.getElementById('degree') as HTMLInputElement ).value);
+  console.log(`Degree: ${degree}`)
+  return degree
 }
 
-document.getElementById('start-button')?.addEventListener('click', start)
+function createCube(degree: number) {
+  const cube = CubeState.createRandomCube(degree)
+  console.log("Problem:")
+  console.log(cube)
+  return cube
+}
+
+const solverList = [
+  () => new SteepestAscentSolver(createCube(readDegree())),
+  () => new SidewaysMoveSolver(createCube(readDegree())),
+  () => new RandomRestartHillClimbingSolver(createCube(readDegree())),
+  () => new StochasticSolver(createCube(readDegree())),
+  () => new SimulatedAnnealingSolver(createCube(readDegree())),
+  () => undefined, // () => new GeneticSolver(readDegree()),
+]
+let selectedSolver = solverList[0]();
+
+
+document.getElementById('algorithm-select')?.addEventListener('change', (event) => {
+  const algorithmIdx: number = Number.parseInt((event.target as HTMLSelectElement).value)
+  selectedSolver = solverList[algorithmIdx]();
+  console.log(`Selected algorithm: ${selectedSolver!.constructor.name}`)
+});
+
+document.getElementById('start-button')?.addEventListener('click', () => {
+  console.log("\nSolution:")
+  const solver: Solver = selectedSolver!;
+  const result = solver.solve()
+  console.log(result)
+})
 
 
