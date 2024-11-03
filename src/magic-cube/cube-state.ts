@@ -5,8 +5,8 @@ export class CubeState {
     /**
      * Used for the visualization
      */
-    public from?: number[];
-    public to?: number[];
+    public from?: [number, number, number];
+    public to?: [number, number, number];
 
     /**
      * 
@@ -92,7 +92,7 @@ export class CubeState {
         let temp = this.content[i1][j1][k1];
         this.content[i1][j1][k1] = this.content[i2][j2][k2];
         this.content[i2][j2][k2] = temp;
-        
+
         this.from = [i1, j1, k1];
         this.to = [i2, j2, k2];
     }
