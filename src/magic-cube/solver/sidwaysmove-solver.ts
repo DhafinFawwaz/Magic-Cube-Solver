@@ -33,7 +33,7 @@ export class SidewaysMoveSolver extends Solver {
         this.log(startTime, current, evaluator, 0, 0);
         return current;
       }
-      current = neighbor;
+      current = neighbor.getCopy();
       onStateChange?.(neighbor);
       this.log(startTime, current, evaluator);
     }

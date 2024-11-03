@@ -59,7 +59,7 @@ export class SimulatedAnnealingSolver extends Solver {
         currentScore = neighborScore;
         onStateChange?.(current);
         console.log(
-          `Iteration ${iteration}: Accepted better score ${currentScore}`
+          `Iteration ${iteration}: Accepted,  better score ${currentScore}`
         );
       } else {
         // Accept the worse neighbor with a probability
@@ -69,22 +69,16 @@ export class SimulatedAnnealingSolver extends Solver {
           currentScore = neighborScore;
           onStateChange?.(current);
           console.log(
-            `Iteration ${iteration}: Accepted worse score ${currentScore} with probability ${probability.toFixed(
+            `Iteration ${iteration}: Accepted, worse score ${currentScore} with probability ${probability.toFixed(
               4
             )}`
-          );
-        } else {
-          console.log(
-            `Iteration ${iteration}: Rejected worse score ${neighborScore}`
           );
         }
       }
 
       // Cool down the temperature
       temperature *= this.coolingRate;
-      console.log(`Temperature: ${temperature.toFixed(2)}`);
-
-      this.log(startTime, current, evaluator, iteration, 0);
+      this.log(startTime, current, evaluator, iteration);
     }
 
     if (current.isMagicCube()) {
@@ -95,7 +89,7 @@ export class SimulatedAnnealingSolver extends Solver {
       );
     }
 
-    this.log(startTime, current, evaluator, iteration, 0);
+    this.log(startTime, current, evaluator, iteration);
     return current;
   }
 }
