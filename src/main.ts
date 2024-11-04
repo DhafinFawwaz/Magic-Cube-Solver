@@ -5,6 +5,7 @@ import { StochasticSolver } from "./magic-cube/solver/stochastic-solver";
 import { SteepestAscentSolver } from "./magic-cube/solver/steepestascent-solver";
 import { SidewaysMoveSolver } from "./magic-cube/solver/sidwaysmove-solver";
 import { SimulatedAnnealingSolver } from "./magic-cube/solver/simulatedannealing-solver";
+import { GeneticSolver } from "./magic-cube/solver/genetic-solver";
 import { RandomRestartHillClimbingSolver } from "./magic-cube/solver/randomrestarthillclimbing-solver";
 import { SolverAnimator } from "./magic-cube-animator/solver-animator";
 
@@ -45,8 +46,10 @@ const solverList = [
     new SimulatedAnnealingSolver(currentCube, (e) =>
       solverAnimator.onStateChange(e)
     ),
-  () => undefined, // () => new GeneticSolver(readDegree(), (e) => solverAnimator.onStateChange(e)),
+  // () => undefined, // () => new GeneticSolver(readDegree(), (e) => solverAnimator.onStateChange(e)),
+  () => new GeneticSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
 ];
+
 let selectedSolver = solverList[0]();
 
 const sliderContainer = document.getElementById("slider-container");
