@@ -41,7 +41,74 @@
           <option class="cursor-pointer" value="4">Simulated Annealing</option>
           <option class="cursor-pointer" value="5">Genetic</option>
         </select>
+
       </div>
+
+      <div id="algorithm-param-container">
+
+        <!-- Steepest Ascent -->
+        <div class="grid-cols-1 gap-2 grid">
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
+            <input id="max-iteration-steepest-ascent" class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+        </div>
+
+
+        <!-- Steepest Ascent with Sideways Move -->
+        <div class="grid-cols-2 gap-2 hidden">
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Sideways</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+        </div>
+
+        <!-- Random Restart -->
+        <div class="grid-cols-2 gap-2 hidden">
+          <div>
+            <div class="text-2xs text-slate-50 mt-1 mb-1">Max Iteration/Restart</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Restart</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+        </div>
+
+        <!-- Stochastic -->
+        <div class="grid-cols-1 gap-2 hidden">
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+        </div>
+
+        <!-- Simulated Annealing -->
+        <div class="grid-cols-1 gap-2 hidden">
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+        </div>
+
+        <!-- Genetic -->
+        <div class="grid-cols-2 gap-2 hidden">
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+          <div>
+            <div class="text-sm text-slate-50 mb-1">Population</div>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          </div>
+        </div>
+
+      </div>
+
 
       <div>
         <div class="text-sm text-slate-50 mb-1">Degree</div>
@@ -93,7 +160,7 @@
     <div id="loading-container" class="fixed w-full h-full place-content-center hidden duration-150 ease-out-expo">
       <div id="loading-container" class="fixed w-full h-full bg-zinc-900 opacity-50"></div>
       <div class="animate-spin">
-        <svg class="scale-250" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="white"><path fill-rule="evenodd" d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14m0 3c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" clip-rule="evenodd" opacity="0.2"/><path d="M2 12C2 6.477 6.477 2 12 2v3a7 7 0 0 0-7 7z"/></g></svg>
+        <svg class="scale-300" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="white"><path fill-rule="evenodd" d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14m0 3c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" clip-rule="evenodd" opacity="0.2"/><path d="M2 12C2 6.477 6.477 2 12 2v3a7 7 0 0 0-7 7z"/></g></svg>
       </div>
     </div>
 

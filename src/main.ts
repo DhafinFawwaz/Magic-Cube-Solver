@@ -61,9 +61,19 @@ const slider: HTMLInputElement = document.getElementById(
 )! as HTMLInputElement;
 solverAnimator.slider = slider;
 const loadingSpinner = new LoadingSpinner(document.getElementById("loading-container")!); 
+const algorithmParamContainer = document.getElementById("algorithm-param-container");
 
 document.getElementById("algorithm-select")?.addEventListener("change", () => {
-  selectedSolver = solverList[readAlgorithmIdx()]();
+  const idx = readAlgorithmIdx();
+  selectedSolver = solverList[idx]();
+  for (let i = 0; i < algorithmParamContainer!.children.length; i++) {
+    const child = algorithmParamContainer!.children[i];
+    child.classList.remove("grid")
+    child.classList.add("hidden")
+  }
+  algorithmParamContainer!.children[idx].classList.remove("hidden");
+  algorithmParamContainer!.children[idx].classList.add("grid");
+
 });
 
 document.getElementById("start-button")?.addEventListener("click", async () => {
