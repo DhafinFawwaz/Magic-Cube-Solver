@@ -167,13 +167,11 @@ document.getElementById("start-button")?.addEventListener("click", () => {
         solver.getAdditionalInformation()["numIteration"];
     }
     if (solver.getAdditionalInformation()["stuckFrequency"]) {
-      additionalMessage += "<br>";
       additionalMessage +=
         "<br>Stuck frequency: " +
         solver.getAdditionalInformation()["stuckFrequency"];
     }
     if (solver.getAdditionalInformation()["iterationCounter"]) {
-      additionalMessage += "<br>";
       additionalMessage +=
         "<br>Iteration Count: " +
         solver.getAdditionalInformation()["iterationCounter"];
@@ -181,11 +179,8 @@ document.getElementById("start-button")?.addEventListener("click", () => {
     if (solver.getAdditionalInformation()["iterationPerRestart"]) {
       let temp = solver.getAdditionalInformation()["iterationPerRestart"];
       for (let i = 0; i < temp.length; i++) {
-        if (i != 0) {
-          additionalMessage += "<br>";
-        }
         additionalMessage +=
-          "Iteration Count on " + i + "-th restart: " + temp[i];
+          "<br>Iteration Count on " + i + "-th restart: " + temp[i];
       }
     }
 
