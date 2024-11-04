@@ -11,7 +11,9 @@ export class MagicCubeData {
     public cubeStateSecondaryList: CubeState[] = [];
     public cubeProbablityList: number[] = [];
 
-    public constructor(algorithmIdx: number, param: number[], degree: number, statusInfo: string, cubeStateList: CubeState[], finalState: CubeState, cubeStateSecondaryList: CubeState[] = [], cubeProbablityList: number[] = []) {
+    public initialState: CubeState;
+
+    public constructor(algorithmIdx: number, param: number[], degree: number, statusInfo: string, cubeStateList: CubeState[], finalState: CubeState, cubeStateSecondaryList: CubeState[] = [], cubeProbablityList: number[] = [], initialState: CubeState) {
         this.algorithmIdx = algorithmIdx;
         this.param = param;
         this.degree = degree;
@@ -21,6 +23,8 @@ export class MagicCubeData {
 
         this.cubeStateSecondaryList = cubeStateSecondaryList;
         this.cubeProbablityList = cubeProbablityList;
+
+        this.initialState = initialState;
     }
 
   public download() {

@@ -174,6 +174,20 @@ export class SolverAnimator {
         }
     }
 
+    public setTemporaryCube(cubeState: CubeState) {
+        for(let i = 0; i < cubeState.content.length; i++) {
+            for(let j = 0; j < cubeState.content.length; j++) {
+                for(let k = 0; k < cubeState.content.length; k++) {
+                    const key = cubeState!.content[i][j][k].toString();
+                    const text = NumberText.get(key);
+                    text.material = NumberText.textMaterial;
+                    const [x,y,z] = this.ijkToWorldPosition(i, j, k, cubeState);
+                    text.position.set(x,y,z);
+                }
+            }
+        }
+    }
+
 
     public setNormalizedTime(t: number){
         // if(this.currentCubeState === undefined) return;

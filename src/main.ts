@@ -210,7 +210,8 @@ document.getElementById("start-button")?.addEventListener("click", () => {
       solverAnimator.cubeStateList,
       result,
       solverAnimator.cubeStateSecondaryList,
-      solverAnimator.cubeProbabilityList
+      solverAnimator.cubeProbabilityList,
+      currentCube
     );
   }, 10);
 });
@@ -323,7 +324,7 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
     solverAnimator.cubeProbabilityList = magicCubeData.cubeProbablityList;
     solverAnimator.setCube(magicCubeData.finalState);
 
-    lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState, magicCubeData.cubeStateSecondaryList, magicCubeData.cubeProbablityList);
+    lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState, magicCubeData.cubeStateSecondaryList, magicCubeData.cubeProbablityList, magicCubeData.initialState);
 
     magicLinePlot.update();
     statusInfo!.innerHTML = magicCubeData.statusInfo;
@@ -364,3 +365,15 @@ switchPlotButton?.addEventListener("click", () => {
     enablePlot2();
   }
 })
+
+
+
+const showInitialButton = document.getElementById("show-initial-button");
+const showFinalButton = document.getElementById("show-final-button");
+
+showInitialButton?.addEventListener("click", () => {
+  solverAnimator.setTemporaryCube(lastMagicCubeData.initialState);
+});
+showFinalButton?.addEventListener("click", () => {
+  solverAnimator.setTemporaryCube(lastMagicCubeData.finalState);
+});

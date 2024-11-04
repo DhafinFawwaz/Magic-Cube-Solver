@@ -108,7 +108,15 @@
       <!-- Show plot button -->
       <div id="result-container" class="hidden">
         <hr id="divider" class="bg-zinc-900 border-zinc-700 mt-2">
-        <div id="status-info" class="text-sm text-slate-50 mb-2 mt-1">asdasdgasdg asdgas dg</div>
+        
+        <div class="grid grid-cols-2 gap-2 mt-2">
+          <button id="show-initial-button" class="bg-orange-600 h-8 text-sm hover:bg-orange-700 focus:ring-4 ring-orange-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer font-semibold w-full">Show Initial</button>
+          <button id="show-final-button" class="bg-orange-600 text-sm hover:bg-orange-700 focus:ring-4 ring-orange-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer font-semibold h-8">Show Final</button>
+        </div>
+
+        
+        <div id="status-info" class="text-sm text-slate-50 mb-2 mt-2"></div>
+
         <div class="grid grid-cols-2 gap-2">
           <button id="show-plot-button" class="bg-blue-600 h-8 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer font-semibold w-full">Show Plot</button>
           <button id="export-button" class="bg-blue-600 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer font-semibold h-8">Export</button>
