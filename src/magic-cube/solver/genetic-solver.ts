@@ -6,56 +6,15 @@ export class GeneticSolver extends Solver {
     populationSize: number;
     maxIteration: number;
 
-    public constructor(degree: number, populationSize: number, maxIteration: number, onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
+    public constructor(degree: number, maxIteration: number, populationSize: number, onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
         super(onStateChange, evaluator);
         this.degree = degree;
-        this.populationSize = populationSize;
         this.maxIteration = maxIteration;
+        this.populationSize = populationSize;
 
         // Init cached stuff
-        // CubeState.getCubeSwapPairs(degree);
     }
 
-    // public process(): CubeState {
-    //     // Control variables
-    //     const populationSize: number = this.populationSize;
-    //     const maxIteration: number = this.maxIteration;
-
-    //     // Fixed
-    //     const mutationRate: number = 0.05;
-
-    //     const degree: number = this.degree;
-    //     let population: CubeState[] = Array.from({ length: populationSize }, () => CubeState.createRandomCube(degree));
-
-    //     let iteration: number = 0;
-    //     while (true) {
-
-    //         let newPopulation: CubeState[] = [];
-    //         for (let i = 0; i < populationSize; i++) {
-    //             const [firstParent, secondParent] = GeneticSolver.chooseRandomPair(population, this.evaluator);
-    //             let child = GeneticSolver.reproduce(firstParent, secondParent);
-    //             if (Math.random() < mutationRate) {
-    //                 GeneticSolver.mutate(child);
-    //             }
-    //             newPopulation.push(child);
-    //         }
-    //         population = newPopulation;
-
-    //         const bestCube: CubeState = population.reduce((best, current) =>
-    //             this.evaluator(current) > this.evaluator(best) ? current : best
-    //         );
-
-    //         if (bestCube.isMagicCube()) {
-    //             return bestCube;
-    //         }
-
-    //         iteration += 1;
-    //         if (iteration >= maxIteration) {
-    //             console.log(Solver.evaluateMagicAmount(bestCube));
-    //             return bestCube;
-    //         }
-    //     }
-    // }
     public process(): CubeState {
         // Control variables
         const populationSize: number = this.populationSize;
@@ -67,40 +26,33 @@ export class GeneticSolver extends Solver {
 
         let iteration: number = 0;
         while (true) {
-            // Choose pairs of parents
             const [parent1, parent2] = GeneticSolver.chooseRandomPair(population, this.evaluator);
             const [parent3, parent4] = GeneticSolver.chooseRandomPair(population, this.evaluator);
 
-            // Generate children by reproducing parents
             let [child1, child2] = GeneticSolver.reproduce(parent1, parent2);
             let [child3, child4] = GeneticSolver.reproduce(parent3, parent4);
 
-            // Remove duplicates of chosen parents from population
             const uniqueParents = new Set([parent1, parent2, parent3, parent4]);
             population = population.filter(individual => !uniqueParents.has(individual));
 
-            // Apply mutations to children based on mutation rate
             if (Math.random() < mutationRate) GeneticSolver.mutate(child1);
             if (Math.random() < mutationRate) GeneticSolver.mutate(child2);
             if (Math.random() < mutationRate) GeneticSolver.mutate(child3);
             if (Math.random() < mutationRate) GeneticSolver.mutate(child4);
 
-            // Add new children to the population
             population.push(child1, child2, child3, child4);
 
-            // Find the best cube in the current population
             const bestCube: CubeState = population.reduce((best, current) =>
                 this.evaluator(current) > this.evaluator(best) ? current : best
             );
 
-            // Check if the best cube is a magic cube
             if (bestCube.isMagicCube()) {
                 return bestCube;
             }
 
             iteration += 1;
             if (iteration >= maxIteration) {
-                console.log(Solver.evaluateMagicAmount(bestCube));
+                console.log("Total:", Solver.evaluateMagicAmount(bestCube));
                 return bestCube;
             }
         }
@@ -113,10 +65,13 @@ export class GeneticSolver extends Solver {
         const selectRandom = (): CubeState => {
             const randomValue = Math.random() * totalScore;
             let cumulativeScore = 0;
-
+            let idx = 0;
             for (const cube of population) {
                 cumulativeScore += evaluator(cube);
-                if (cumulativeScore >= randomValue) {
+                idx += 1;
+
+                if (cumulativeScore <= randomValue) {
+                    console.log("IDX", idx);
                     return cube;
                 }
             }
@@ -129,14 +84,10 @@ export class GeneticSolver extends Solver {
         return [first, second];
     }
 
-    public static reproduce(parent1: CubeState, parent2: CubeState, evaluator: Evaluator = Solver.evaluateDeviationSqrt): [CubeState, CubeState] {
-        if (evaluator(parent2) > evaluator(parent1)) {
-            [parent1, parent2] = [parent2, parent1];
-        }
-
+    public static reproduce(parent1: CubeState, parent2: CubeState): [CubeState, CubeState] {
         const n = parent1.content.length;
-        const child1 = parent1.getCopy();
-        const child2 = parent2.getCopy();
+        let child1 = parent1.getCopy();
+        let child2 = parent2.getCopy();
 
         const fixedNumbers1 = GeneticSolver.getFixedNumbers(parent1);
         const notFixedList1 = GeneticSolver.getNonFixedNumbers(parent1, parent2);
