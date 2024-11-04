@@ -47,7 +47,8 @@ const slider: HTMLInputElement = document.getElementById("slider")! as HTMLInput
 solverAnimator.slider = slider;
 const loadingSpinner = new LoadingSpinner(document.getElementById("loading-container")!);
 const algorithmParamContainer = document.getElementById("algorithm-param-container");
-const hrLine = document.getElementById("divider");
+const resultContainer = document.getElementById("result-container");
+const statusInfo = document.getElementById("status-info");
 
 document.getElementById("algorithm-select")?.addEventListener("change", () => {
   const idx = readAlgorithmIdx();
@@ -61,6 +62,22 @@ document.getElementById("algorithm-select")?.addEventListener("change", () => {
   algorithmParamContainer!.children[idx].classList.add("grid");
 });
 
+
+function downloadJson(json: {cubeStateList: CubeState[], statusInfo: string}) {
+  const data = JSON.stringify(json);
+  const blob = new Blob([data], { type: "application/json" });
+  const jsonObjectUrl = URL.createObjectURL(blob);
+
+  const filename = "example.json";
+  const anchorEl = document.createElement("a");
+  anchorEl.href = jsonObjectUrl;
+  anchorEl.download = filename;
+
+  anchorEl.click();
+  URL.revokeObjectURL(jsonObjectUrl);
+}
+
+
 document.getElementById("start-button")?.addEventListener("click", async () => {
   sliderContainer?.classList.remove("flex");
   sliderContainer?.classList.add("hidden");
@@ -68,6 +85,8 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
   slider.value = "0";
   solverAnimator.clearAnimationStateList();
   loadingSpinner.setActive(true);
+  solverAnimator.pause();
+  solverAnimator.setNormalizedTime(0);
 
   setTimeout(() => {
     console.log("Problem:");
@@ -79,7 +98,7 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
     const executionTime = performance.now() - startTime;
     const magicAmount = Solver.evaluateMagicAmount(result);
 
-    statusInfo?.classList.remove("hidden");
+    resultContainer?.classList.remove("hidden");
     statusInfo!.innerHTML = `Time: ${executionTime.toFixed(2)} ms<br>Magic: ${magicAmount}/${result.maxAmountOfMagic}<br>Score: ${solver.evaluator(result).toFixed(2)}`;
     
     console.log("Solution:")
@@ -88,13 +107,16 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
     magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
     magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
     magicLinePlot.update();
-
-    showPlotButton?.classList.remove("hidden");
+  
     sliderContainer?.classList.remove('hidden');
     sliderContainer?.classList.add('flex');
     slider?.setAttribute('value', '0');
     loadingSpinner.setActive(false);
-    hrLine?.classList.remove("hidden");
+
+    downloadJson({
+      cubeStateList: solverAnimator.cubeStateList,
+      statusInfo: statusInfo!.innerHTML
+    });
   }, 10);
 });
 document.getElementById("generate-button")?.addEventListener("click", () => {
@@ -133,12 +155,6 @@ slider.addEventListener("input", () => {
   solverAnimator.setNormalizedTime(normalizedValue);
 });
 
-// On space click, click the start-button
-// document.addEventListener("keydown", (e) => {
-//   if (e.key === " ") {
-//     playpauseCheckbox.click();
-//   }
-// });
 
 document
   .getElementById("playbackspeed")
@@ -159,7 +175,6 @@ magicLinePlot.update();
 
 const chartContainer = document.getElementById("chart-container");
 document.getElementById("plot-close-button")?.addEventListener("click", () => {
-  // chartContainer?.classList.add("hidden");
   chartContainer?.classList.add("invisible");
   chartContainer?.classList.remove("visible");
 
@@ -168,7 +183,6 @@ document.getElementById("plot-close-button")?.addEventListener("click", () => {
 })
 const showPlotButton = document.getElementById("show-plot-button");
 showPlotButton?.addEventListener("click", () => {
-  // chartContainer?.classList.remove("hidden");
   chartContainer?.classList.remove("invisible");
   chartContainer?.classList.add("visible");
   
@@ -176,4 +190,21 @@ showPlotButton?.addEventListener("click", () => {
   chartContainer?.classList.add("opacity-100");
 })
 
-const statusInfo = document.getElementById("status-info");
+
+document.getElementById("export-button")?.addEventListener("click", () => {
+  downloadJson({
+    cubeStateList: solverAnimator.cubeStateList,
+    statusInfo: statusInfo!.innerHTML
+  });
+});
+
+document.getElementById("import-input")?.addEventListener("change", (e) => {
+  const file = (e.target as HTMLInputElement).files![0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target!.result;
+    const json = JSON.parse(data as string);
+    solverAnimator.cubeStateList = json;
+  };
+  reader.readAsText(file);
+});

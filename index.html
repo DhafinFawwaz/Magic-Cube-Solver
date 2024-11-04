@@ -23,6 +23,14 @@
     <!-- Top Right GUI -->
     <div class="fixed top-0 right-0 flex flex-col gap-2 bg-zinc-900 p-2 rounded-bl-xl drop-shadow-lg">
       <div>
+        <div class="mb-2">
+          <div class="gap-2 flex">
+            <input id="import-input" hidden type="file"/>
+            <label for="import-input" class="bg-blue-600 text-sm hover:bg-blue-700 active:ring-4 focus:ring-4 ring-blue-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer font-semibold flex items-center justify-center h-8">Import</label>
+          </div>
+        </div>
+
+
         <div class="text-sm text-slate-50 mb-1">Algorithm</div>
         <select class="cursor-pointer rounded-lg bg-zinc-800 text-slate-50 text-sm pl-2.5 outline-none focus:ring-1 hover:ring-1 ring-indigo-700 h-8" name="Algorithm" id="algorithm-select">
           <option class="cursor-pointer" value="0" selected>
@@ -46,7 +54,7 @@
         <div class="grid-cols-1 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Sideways</div>
-            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="100"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" type="number" value="100"
             />
           </div>
         </div>
@@ -55,7 +63,7 @@
         <div class="grid-cols-1 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Restart</div>
-            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" type="number" value="5"
             />
           </div>
         </div>
@@ -64,7 +72,7 @@
         <div class="grid-cols-1 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="100000"/>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" type="number" value="100000"/>
           </div>
         </div>
 
@@ -75,12 +83,12 @@
         <div class="grid-cols-2 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" type="number" value="5"
             />
           </div>
           <div>
             <div class="text-sm text-slate-50 mb-1">Population</div>
-            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" type="number" value="5"
             />
           </div>
         </div>
@@ -98,27 +106,29 @@
 
       <button id="start-button" class="bg-indigo-600 h-8 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer mt-1.5 font-semibold">Solve</button>
 
-      <hr id="divider" class="bg-zinc-900 border-zinc-700 mt-2 hidden">
-
-      <!-- Info status -->
-      <div id="status-info" class="text-sm text-slate-50 hidden"></div>
-      
       <!-- Show plot button -->
-      <button id="show-plot-button" class="bg-blue-600 h-8 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer hidden font-semibold">Show Plot</button>
+      <div id="result-container" class="hidden">
+        <hr id="divider" class="bg-zinc-900 border-zinc-700 mt-2">
+        <div id="status-info" class="text-sm text-slate-50 mb-2 mt-1">asdasdgasdg asdgas dg</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="show-plot-button" class="bg-blue-600 h-8 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer font-semibold w-full">Show Plot</button>
+          <button id="export-button" class="bg-blue-600 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer font-semibold h-8">Export</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Slider Player -->
     <div id="slider-container" class="fixed bottom-0 drop-shadow-lg w-full flex-col hidden">
-      <div class="bg-zinc-900 p-2 w-20">
-        <div class="text-sm text-slate-50 mb-1">Speed</div>
-        <input
-          class="cursor-text text-sm rounded-lg pl-2.5 w-full h-8 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-          id="playbackspeed"
-          type="number"
-          value="1"
-          min="0.1"
-        />
+      
+      <div class="flex bg-zinc-900 p-2 gap-2 w-min rounded-tr-lg">
+        <div class="w-20">
+          <div class="text-sm text-slate-50 mb-1">Speed</div>
+          <input class="cursor-text text-sm rounded-lg pl-2.5 w-full h-8 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="playbackspeed" type="number" value="1" min="0.1"/>
+        </div>
       </div>
+
+
       <div class="flex gap-2 bg-zinc-900 p-2">
         <div class="playpause flex scale-75">
           <input
