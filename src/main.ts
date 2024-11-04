@@ -162,28 +162,34 @@ document.getElementById("start-button")?.addEventListener("click", () => {
     let additionalMessage = "";
 
     if (solver.getAdditionalInformation()["stuckFrequency"]) {
+      additionalMessage += "<br>";
       additionalMessage +=
         "Stuck frequency: " +
         solver.getAdditionalInformation()["stuckFrequency"];
     }
     if (solver.getAdditionalInformation()["iterationCounter"]) {
+      additionalMessage += "<br>";
       additionalMessage +=
         "Iteration Count: " +
         solver.getAdditionalInformation()["iterationCounter"];
     }
+    if (solver.getAdditionalInformation()["restartsCount"]){
+      additionalMessage += "<br>";
+      additionalMessage +=
+      "Restart Count: " +
+      solver.getAdditionalInformation()["restartsCount"];
+  }
     if (solver.getAdditionalInformation()["iterationPerRestart"]){
       let temp = solver.getAdditionalInformation()["iterationPerRestart"];
       for(let i = 0 ; i < temp.length; i++){
-        if(i != 0){
-          additionalMessage += "<br>";
-        }
+        additionalMessage += "<br>";
         additionalMessage +=
-        "Iteration Count on "+ i +"-th restart: " +
+        "Iteration Count on "+ (i+1) +"-th restart: " +
         temp[i];
       }
     }
 
-    statusInfo!.innerHTML = mandatoryMessage + "<br>" + additionalMessage;
+    statusInfo!.innerHTML = mandatoryMessage + additionalMessage;
 
     resultContainer?.classList.remove("hidden");
     sliderContainer?.classList.remove("hidden");

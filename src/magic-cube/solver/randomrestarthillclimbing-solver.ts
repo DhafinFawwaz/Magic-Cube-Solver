@@ -6,6 +6,7 @@ export class RandomRestartHillClimbingSolver extends Solver {
   public initialCube: CubeState;
   private maxRestarts: number;
   private iterationPerRestart: number[];
+  private restartsCount: number;
 
   /**
    * Constructs a RandomRestartHillClimbingSolver.
@@ -25,6 +26,7 @@ export class RandomRestartHillClimbingSolver extends Solver {
     this.initialCube = cube;
     this.maxRestarts = maxRestarts;
     this.iterationPerRestart = [];
+    this.restartsCount = 0;
     
 
     // Initialize cached properties
@@ -38,6 +40,7 @@ export class RandomRestartHillClimbingSolver extends Solver {
    * @returns The best CubeState found.
    */
   public process(): CubeState {
+    this.restartsCount = 0;
     let startTime = performance.now();
     const { evaluator, onStateChange } = this;
 
@@ -46,6 +49,7 @@ export class RandomRestartHillClimbingSolver extends Solver {
 
     for (let restart = 0; restart < this.maxRestarts; restart++) {
       // Create a new random cube
+      this.restartsCount++;
       let randomCube = CubeState.createRandomCube(
         this.initialCube.content.length
       );
@@ -84,6 +88,7 @@ export class RandomRestartHillClimbingSolver extends Solver {
   public getAdditionalInformation(): Object {
     return {
       iterationPerRestart: this.iterationPerRestart,
+      restartsCount: this.restartsCount
     };
 }
 }

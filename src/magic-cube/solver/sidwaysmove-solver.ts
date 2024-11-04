@@ -3,6 +3,7 @@ import { CubeStateChangeCallback, Evaluator, Solver } from "../solver";
 
 export class SidewaysMoveSolver extends Solver {
   public initialCube: CubeState;
+  private iterationCounter: number;
   maxSideways: number;
 
   public constructor(
@@ -13,6 +14,7 @@ export class SidewaysMoveSolver extends Solver {
   ) {
     super(onStateChange, evaluator);
     this.initialCube = cube;
+    this.iterationCounter = 0;
 
     // Init cached stuff
     this.maxSideways = maxSideways;
@@ -28,6 +30,7 @@ export class SidewaysMoveSolver extends Solver {
 
     let current = this.initialCube.getCopy();
     while (!current.isMagicCube() && sidewaysCount < this.maxSideways) {
+      this.iterationCounter++;
       const neighbor = SidewaysMoveSolver.getHighestSuccessorByPairs(
         current,
         evaluator
@@ -94,4 +97,10 @@ export class SidewaysMoveSolver extends Solver {
     );
     return highestCube;
   }
+
+  public getAdditionalInformation(): Object {
+    return {
+      iterationCounter: this.iterationCounter,
+    };
+}
 }
