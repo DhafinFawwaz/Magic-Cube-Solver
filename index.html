@@ -184,12 +184,32 @@
 
       <div class="w-full h-full grid place-items-center px-2">
         
-        <div class="relative bg-zinc-900 max-w-[40rem] max-h-[30rem] w-full h-full opacity-100 p-4 rounded-xl flex items-center">
-          <canvas class="" id="chart-canvas"></canvas>
+        <div class="relative bg-zinc-900 max-w-[40rem] max-h-[30rem] w-full h-full opacity-100 p-4 rounded-xl flex justify-center">
+          
+          <div id="plot-1-container" class="absolute w-full h-full">
+            <div class="w-full h-full justify-center flex">
+              <canvas class="mt-10 mb-8 mx-4" id="chart-canvas"></canvas>
+              <div class="absolute font-semibold text-slate-50">x = iteration, y = score</div>
+            </div>
+          </div>
+          
+          <div id="plot-2-container" class="absolute w-full h-full hidden">
+            <div class="w-full h-full justify-center flex">
+              <canvas class="mt-10 mb-8 mx-4" id="chart-canvas-2"></canvas>
+              <div class="absolute font-semibold text-slate-50">x = iteration, y = e^(ΔE/T)</div>
+            </div>
+          </div>
           
           <button id="plot-close-button" class="hover:bg-zinc-700 outline-none focus:ring-4 ring-zinc-600 absolute grid place-items-center h-9 w-9 bg-zinc-800 rounded-lg cursor-pointer top-0 right-0 m-4">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="#aaaaaa" d="M15.1 3.1L12.9.9L8 5.9L3.1.9L.9 3.1l5 4.9l-5 4.9l2.2 2.2l4.9-5l4.9 5l2.2-2.2l-5-4.9z"/></svg>
           </button>
+
+          <button id="switch-plot-button" class="hover:bg-zinc-700 outline-none focus:ring-4 ring-zinc-600 absolute h-9 bg-zinc-800 rounded-lg cursor-pointer top-0 left-0 m-4 text-sm text-slate-300 font-bold items-center flex gap-2 px-2">
+            <svg class="scale-150" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="#aaaaaa" d="M13.676 5h.038a1 1 0 1 1 0 2c-1.295 0-2.266 0-3.037.062c-.773.062-1.23.179-1.538.343a3.7 3.7 0 0 0-1.57 1.652c-.171.354-.28.806-.338 1.548c-.052.658-.058 1.476-.06 2.58l.693-.692a1 1 0 0 1 1.415 1.414l-2.4 2.4a1 1 0 0 1-1.45-.036l-2.17-2.4a1 1 0 1 1 1.483-1.342l.43.476c.001-1.018.01-1.856.065-2.555c.067-.859.206-1.592.533-2.266a5.7 5.7 0 0 1 2.426-2.543c.67-.359 1.456-.503 2.322-.572C11.378 5 12.428 5 13.675 5m4.178 2.4a1 1 0 0 1 .716.33l2.171 2.4a1 1 0 1 1-1.482 1.34l-.43-.475c-.002 1.018-.011 1.856-.066 2.555c-.067.859-.206 1.592-.533 2.266a5.7 5.7 0 0 1-2.426 2.543c-.67.358-1.456.503-2.322.572c-.86.069-1.91.069-3.157.069h-.04a1 1 0 0 1 0-2c1.296 0 2.267 0 3.038-.062c.773-.062 1.23-.179 1.538-.343a3.7 3.7 0 0 0 1.57-1.652c.171-.354.28-.806.338-1.548c.052-.658.059-1.476.06-2.58l-.693.692a1 1 0 0 1-1.414-1.414l2.4-2.4a1 1 0 0 1 .732-.293"/></svg> Switch Type
+          </button>
+
+
+
         </div>
       </div>
     </div>

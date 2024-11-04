@@ -61,33 +61,12 @@ solverAnimator.load(() => {
 });
 
 const solverList = [
-  () =>
-    new SteepestAscentSolver(currentCube, (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new SidewaysMoveSolver(currentCube, readCurrentParam(0), (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new RandomRestartHillClimbingSolver(currentCube, readCurrentParam(0), (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new StochasticSolver(currentCube, readCurrentParam(0), (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new SimulatedAnnealingSolver(currentCube, (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new GeneticSolver(
-      readDegree(),
-      readCurrentParam(0),
-      readCurrentParam(1),
-      (e) => solverAnimator.onStateChange(e)
-    ),
+  () => new SteepestAscentSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SidewaysMoveSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
+  () => new RandomRestartHillClimbingSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
+  () => new StochasticSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeStateSecondaryList.push(e)),
+  () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeProbabilityList.push(e)),
+  () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e)),
 ];
 
 let selectedSolver = solverList[0]();
@@ -123,6 +102,32 @@ document.getElementById("algorithm-select")?.addEventListener("change", () => {
   algorithmParamContainer!.children[idx].classList.add("grid");
 });
 
+function applyMagicLinePlot(solver: Solver) {
+  switchPlotButton?.classList.add("hidden");
+
+    if(solver instanceof StochasticSolver) {
+      magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateSecondaryList.length + 1));
+      magicLinePlot.setY(solverAnimator.cubeStateSecondaryList.map(state => solver.evaluator(state)));
+      magicLinePlot.update();
+
+    } else if(solver instanceof SimulatedAnnealingSolver) {
+      magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+      magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+      magicLinePlot.update();
+
+      magicLinePlot2.setX(generateArrayNumbers(1, solverAnimator.cubeProbabilityList.length + 1));
+      magicLinePlot2.setY(solverAnimator.cubeProbabilityList);
+      magicLinePlot2.update();
+
+      switchPlotButton?.classList.remove("hidden");
+
+    } else {
+      magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+      magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+      magicLinePlot.update();
+    }
+}
+
 document.getElementById("start-button")?.addEventListener("click", () => {
   sliderContainer?.classList.remove("flex");
   sliderContainer?.classList.add("hidden");
@@ -146,13 +151,7 @@ document.getElementById("start-button")?.addEventListener("click", () => {
     console.log("Solution:");
     console.log(result);
     solverAnimator.setCube(result);
-    magicLinePlot.setX(
-      generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1)
-    );
-    magicLinePlot.setY(
-      solverAnimator.cubeStateList.map((state) => solver.evaluator(state))
-    );
-    magicLinePlot.update();
+    applyMagicLinePlot(solver);
 
     let mandatoryMessage = `Time: ${executionTime.toFixed(
       2
@@ -190,12 +189,14 @@ document.getElementById("start-button")?.addEventListener("click", () => {
     }
 
     statusInfo!.innerHTML = mandatoryMessage + additionalMessage;
-
+  
     resultContainer?.classList.remove("hidden");
     sliderContainer?.classList.remove("hidden");
     sliderContainer?.classList.add("flex");
     slider?.setAttribute("value", "0");
     loadingSpinner.setActive(false);
+    enablePlot1();
+
 
     // for saving
     const firstParam = readCurrentParam(0);
@@ -266,7 +267,9 @@ const canvas: HTMLCanvasElement = document.getElementById(
   "chart-canvas"
 ) as HTMLCanvasElement;
 const magicLinePlot = new MagicLinePlot(canvas);
-magicLinePlot.update();
+
+const canvas2: HTMLCanvasElement = document.getElementById("chart-canvas-2") as HTMLCanvasElement;
+const magicLinePlot2 = new MagicLinePlot(canvas2);
 
 const chartContainer = document.getElementById("chart-container");
 document.getElementById("plot-close-button")?.addEventListener("click", () => {
@@ -303,34 +306,30 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
       setCurrentParam(i, magicCubeData.param[i]);
     setDegree(magicCubeData.degree);
     statusInfo!.innerHTML = magicCubeData.statusInfo;
-    solverAnimator.cubeStateList = magicCubeData.cubeStateList;
+    solverAnimator.cubeStateList = magicCubeData.cubeStateList.map(state => {
+      const stateObj = new CubeState();
+      stateObj.content = state.content;
+      stateObj.from = state.from;
+      stateObj.to = state.to;
+      return stateObj;
+    });
+    solverAnimator.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList.map(state => {
+      const stateObj = new CubeState();
+      stateObj.content = state.content;
+      stateObj.from = state.from;
+      stateObj.to = state.to;
+      return stateObj;
+    });
+    solverAnimator.cubeProbabilityList = magicCubeData.cubeProbablityList;
     solverAnimator.setCube(magicCubeData.finalState);
 
-    lastMagicCubeData = new MagicCubeData(
-      magicCubeData.algorithmIdx,
-      magicCubeData.param,
-      magicCubeData.degree,
-      magicCubeData.statusInfo,
-      magicCubeData.cubeStateList,
-      magicCubeData.finalState
-    );
+    lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState, magicCubeData.cubeStateSecondaryList, magicCubeData.cubeProbablityList);
 
-    magicLinePlot.setX(
-      generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1)
-    );
-    magicLinePlot.setY(
-      solverAnimator.cubeStateList.map((state) => {
-        const stateObj = new CubeState();
-        stateObj.content = state.content;
-        stateObj.from = state.from;
-        stateObj.to = state.to;
-        const res = selectedSolver.evaluator(stateObj);
-        return res;
-      })
-    );
     magicLinePlot.update();
     statusInfo!.innerHTML = magicCubeData.statusInfo;
-
+    applyMagicLinePlot(selectedSolver);
+    
+  
     resultContainer?.classList.remove("hidden");
     sliderContainer?.classList.remove("hidden");
     sliderContainer?.classList.add("flex");
@@ -339,3 +338,31 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
   };
   reader.readAsText(file);
 });
+
+
+
+
+
+
+// plot switch
+const switchPlotButton = document.getElementById("switch-plot-button");
+const plot1Container = document.getElementById("plot-1-container");
+const plot2Container = document.getElementById("plot-2-container");
+function enablePlot1() {
+  plot1Container?.classList.remove("hidden");
+  plot2Container?.classList.add("hidden");
+  console.log("enable plot 1")
+}
+function enablePlot2() {
+  plot1Container?.classList.add("hidden");
+  plot2Container?.classList.remove("hidden");
+  console.log("enable plot 2")
+}
+
+switchPlotButton?.addEventListener("click", () => {
+  if(plot1Container?.classList.contains("hidden")) {
+    enablePlot1();
+  } else {
+    enablePlot2();
+  }
+})
