@@ -17,6 +17,7 @@ export class NumberText {
     static isLoaded = false;
 
     static textMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
+    static magicMaterial = new THREE.MeshLambertMaterial({color: 0x00ff00});
     static tintedTextFromMaterial = new THREE.MeshLambertMaterial({color: 0x00ffff});
     static tintedTextToMaterial = new THREE.MeshLambertMaterial({color: 0x0000ff});
     static transparentMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0.5});

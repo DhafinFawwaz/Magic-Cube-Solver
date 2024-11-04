@@ -105,12 +105,12 @@ export class SolverAnimator {
     }
 
     public setCube(cubeState: CubeState) {
-        this.currentCubeState = cubeState;
+        // this.currentCubeState = cubeState;
         this.textList = [];
         this.clearAllTextInScene();
-        for(let i = 0; i < this.currentCubeState.content.length; i++) {
-            for(let j = 0; j < this.currentCubeState.content.length; j++) {
-                for(let k = 0; k < this.currentCubeState.content.length; k++) {
+        for(let i = 0; i < cubeState.content.length; i++) {
+            for(let j = 0; j < cubeState.content.length; j++) {
+                for(let k = 0; k < cubeState.content.length; k++) {
                     const text = NumberText.get(cubeState!.content[i][j][k].toString());
                     text.material = NumberText.textMaterial;
                     const [x,y,z] = this.ijkToWorldPosition(i, j, k, cubeState);
@@ -120,6 +120,17 @@ export class SolverAnimator {
                 }
             }
         }
+
+        // const magicNumber = cubeState.calculateMagicNumber()
+        // cubeState.iterateAndDo((arr: number[]) => {
+        //     let total = arr.reduce((a, b) => a + b, 0)
+        //     if(total === magicNumber) {
+        //         for(let i = 0; i < arr.length; i++) {
+        //             const text = NumberText.get(arr[i].toString());
+        //             text.material = NumberText.magicMaterial;
+        //         }
+        //     }
+        // })
     }
 
     isPlaying = false;
@@ -162,7 +173,7 @@ export class SolverAnimator {
 
 
     public setNormalizedTime(t: number){
-        if(this.currentCubeState === undefined) return;
+        // if(this.currentCubeState === undefined) return;
 
         const currentIdx = Math.floor(t * this.cubeStateList.length);
         if(currentIdx >= this.cubeStateList.length) return;

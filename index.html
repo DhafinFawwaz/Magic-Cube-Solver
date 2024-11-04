@@ -83,7 +83,7 @@
         <div class="grid-cols-1 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="100000"/>
           </div>
         </div>
 
@@ -128,21 +128,18 @@
         </div>
       </div>
 
-      <button
-        id="start-button"
-        class="bg-indigo-600 h-8 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer mt-1.5"
-      >
-        Solve
-      </button>
+      <button id="start-button" class="bg-indigo-600 h-8 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer mt-1.5">Solve</button>
+
+      <!-- Info status -->
+      <div id="info" class="text-sm text-slate-50"></div>
+      
+      <!-- Show plot button -->
+      <button id="show-plot-button" class="bg-blue-600 h-8 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer">Show Plot</button>
     </div>
 
-    <!-- <div class="fixed top-0 grid bg-zinc-900 p-2 rounded-br-xl drop-shadow-lg w-64">
-      <div class="text-sm text-slate-50" id="log-message">[Status]</div>
-    </div> -->
-
     <!-- Slider Player -->
-    <div id="slider-container" class="fixed bottom-0 drop-shadow-lg w-full flex flex-col hidden">
-      <div class="bg-zinc-900 p-2 w-32">
+    <div id="slider-container" class="fixed bottom-0 drop-shadow-lg w-full flex-col hidden">
+      <div class="bg-zinc-900 p-2 w-20">
         <div class="text-sm text-slate-50 mb-1">Speed</div>
         <input class="cursor-text text-sm rounded-lg pl-2.5 w-full h-8 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="playbackspeed" type="number" value="1" min="0.1">
       </div>
@@ -158,11 +155,32 @@
     
     <!-- Loading Bar -->
     <div id="loading-container" class="fixed w-full h-full place-content-center hidden duration-150 ease-out-expo">
-      <div id="loading-container" class="fixed w-full h-full bg-zinc-900 opacity-50"></div>
+      <div class="fixed w-full h-full bg-zinc-900 opacity-50"></div>
       <div class="animate-spin">
         <svg class="scale-300" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="white"><path fill-rule="evenodd" d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14m0 3c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" clip-rule="evenodd" opacity="0.2"/><path d="M2 12C2 6.477 6.477 2 12 2v3a7 7 0 0 0-7 7z"/></g></svg>
       </div>
     </div>
+
+
+
+    <!-- Chart Pop Up -->
+    <div id="chart-container" class="fixed w-full h-full duration-150 opacity-0 invisible">
+      <div class="fixed w-full h-full bg-zinc-900 opacity-50"></div>
+
+      <div class="w-full h-full grid place-items-center px-2">
+        
+        <div class="relative bg-zinc-900 max-w-[40rem] max-h-[30rem] w-full h-full opacity-100 p-4 rounded-xl flex items-center">
+          <canvas class="" id="chart-canvas"></canvas>
+          
+          <button id="plot-close-button" class="hover:bg-zinc-700 outline-none focus:ring-4 ring-zinc-800 absolute grid place-items-center h-9 w-9 bg-zinc-600 rounded-lg cursor-pointer top-0 right-0 m-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="white" d="M15.1 3.1L12.9.9L8 5.9L3.1.9L.9 3.1l5 4.9l-5 4.9l2.2 2.2l4.9-5l4.9 5l2.2-2.2l-5-4.9z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    
+
 
     <script type="module" src="/src/main.ts"></script>
   </body>

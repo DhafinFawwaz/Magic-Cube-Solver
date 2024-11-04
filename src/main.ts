@@ -8,19 +8,16 @@ import { GeneticSolver } from "./magic-cube/solver/genetic-solver";
 import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomrestarthillclimbing-solver'
 import { SolverAnimator } from './magic-cube-animator/solver-animator'
 import { LoadingSpinner as LoadingSpinner } from './components/loading-spinner'
+import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement } from 'chart.js'
+import { MagicLinePlot } from './components/magic-line-plot'
 
-function readDegree() {
-  return Number.parseInt(
-    (document.getElementById("degree") as HTMLInputElement).value
-  );
-}
-function createCube(degree: number) {
-  return CubeState.createRandomCube(degree);
-}
-function readAlgorithmIdx() {
-  return Number.parseInt(
-    (document.getElementById("algorithm-select") as HTMLSelectElement).value
-  );
+function readDegree() {return Number.parseInt((document.getElementById("degree") as HTMLInputElement).value);}
+function createCube(degree: number) {return CubeState.createRandomCube(degree);}
+function readAlgorithmIdx() {return Number.parseInt((document.getElementById("algorithm-select") as HTMLSelectElement).value);}
+function readCurrentParam(idx: number) {
+  const parent = algorithmParamContainer!.children[readAlgorithmIdx()];
+  const input: HTMLInputElement = parent!.children[idx].children[1] as HTMLInputElement;
+  return Number.parseInt(input.value);
 }
 
 let currentCube = createCube(5);
@@ -30,35 +27,19 @@ solverAnimator.load(() => {
 });
 
 const solverList = [
-  () =>
-    new SteepestAscentSolver(currentCube, (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new SidewaysMoveSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
-  () =>
-    new RandomRestartHillClimbingSolver(currentCube, (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  () =>
-    new StochasticSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
-  () =>
-    new SimulatedAnnealingSolver(currentCube, (e) =>
-      solverAnimator.onStateChange(e)
-    ),
-  // () => undefined, // () => new GeneticSolver(readDegree(), (e) => solverAnimator.onStateChange(e)),
-  () => new GeneticSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SteepestAscentSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SidewaysMoveSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new RandomRestartHillClimbingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new StochasticSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e)),
 ];
 
 let selectedSolver = solverList[0]();
 
 const sliderContainer = document.getElementById("slider-container");
-const playpauseCheckbox: HTMLInputElement = document.getElementById(
-  "playpause"
-) as HTMLInputElement;
-const slider: HTMLInputElement = document.getElementById(
-  "slider"
-)! as HTMLInputElement;
+const playpauseCheckbox: HTMLInputElement = document.getElementById("playpause") as HTMLInputElement;
+const slider: HTMLInputElement = document.getElementById("slider")! as HTMLInputElement;
 solverAnimator.slider = slider;
 const loadingSpinner = new LoadingSpinner(document.getElementById("loading-container")!); 
 const algorithmParamContainer = document.getElementById("algorithm-param-container");
@@ -87,10 +68,11 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
   setTimeout(() => {
     console.log("Problem:");
     console.log(currentCube);
-    const solver: Solver = selectedSolver!;
+    const solver: Solver = solverList[readAlgorithmIdx()]();
     const result = solver.solve()
     console.log("Solution:")
     console.log(result)
+    solverAnimator.setCube(result);
   
     sliderContainer?.classList.remove('hidden');
     sliderContainer?.classList.add('flex');
@@ -149,4 +131,29 @@ document.getElementById("playbackspeed")?.addEventListener("change", (e: any) =>
     e.target.value = solverAnimator.playbackSpeed;
   }
   solverAnimator.setPlaybackSpeed(val);
+})
+
+
+const canvas: HTMLCanvasElement = document.getElementById("chart-canvas") as HTMLCanvasElement;
+const magicLinePlot = new MagicLinePlot(canvas);
+magicLinePlot.data.labels = ["bruh", "bruh", "bruh", "bruh", "bruh", "bruh"];
+magicLinePlot.update();
+
+const chartContainer = document.getElementById("chart-container");
+document.getElementById("plot-close-button")?.addEventListener("click", () => {
+  // chartContainer?.classList.add("hidden");
+  chartContainer?.classList.add("invisible");
+  chartContainer?.classList.remove("visible");
+
+  chartContainer?.classList.remove("opacity-100");
+  chartContainer?.classList.add("opacity-0");
+})
+
+document.getElementById("show-plot-button")?.addEventListener("click", () => {
+  // chartContainer?.classList.remove("hidden");
+  chartContainer?.classList.remove("invisible");
+  chartContainer?.classList.add("visible");
+  
+  chartContainer?.classList.remove("opacity-0");
+  chartContainer?.classList.add("opacity-100");
 })

@@ -2,27 +2,29 @@ import { CubeState } from "../cube-state";
 import { CubeStateChangeCallback, Evaluator, Solver } from "../solver";
 
 export class GeneticSolver extends Solver {
-    public initialCube: CubeState;
+    degree: number;
+    populationSize: number;
+    maxIteration: number;
 
-    public constructor(cube: CubeState, onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
+    public constructor(degree: number, populationSize: number, maxIteration: number, onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
         super(onStateChange, evaluator);
-        this.initialCube = cube;
+        this.degree = degree;
+        this.populationSize = populationSize;
+        this.maxIteration = maxIteration;
 
         // Init cached stuff
-        this.initialCube.calculateMagicNumber();
-        this.initialCube.maxAmountOfMagic;
-        CubeState.getCubeSwapPairs(cube.content.length);
+        CubeState.getCubeSwapPairs(degree);
     }
 
     public process(): CubeState {
         // Control variables
-        const populationSize: number = 25;
-        const maxIteration: number = 10;
+        const populationSize: number = this.populationSize;
+        const maxIteration: number = this.maxIteration;
 
         // Fixed
         const mutationRate: number = 0.5;
 
-        const degree: number = this.initialCube.content.length;
+        const degree: number = this.degree;
         let population: CubeState[] = Array.from({ length: populationSize }, () => CubeState.createRandomCube(degree));
 
         let iteration: number = 0;
