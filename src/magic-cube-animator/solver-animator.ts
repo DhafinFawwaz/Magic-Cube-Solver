@@ -124,17 +124,18 @@ export class SolverAnimator {
             }
         }
 
-        // const magicNumber = cubeState.calculateMagicNumber()
-        // cubeState.iterateAndDo((arr: number[]) => {
-        //     let total = arr.reduce((a, b) => a + b, 0)
-        //     if(total === magicNumber) {
-        //         for(let i = 0; i < arr.length; i++) {
-        //             const text = NumberText.get(arr[i].toString());
-        //             text.material = NumberText.magicMaterial;
-        //         }
-        //     }
-        // })
+        const magicNumber = cubeState.calculateMagicNumber()
+        cubeState.iterateAndDo((arr: number[]) => {
+            let total = arr.reduce((a, b) => a + b, 0)
+            if(total === magicNumber) {
+                for(let i = 0; i < arr.length; i++) {
+                    const text = NumberText.get(arr[i].toString());
+                    text.material = NumberText.magicMaterial;
+                }
+            }
+        })
     }
+
 
     isPlaying = false;
     startTime = -1;
@@ -186,6 +187,17 @@ export class SolverAnimator {
                 }
             }
         }
+
+        const magicNumber = cubeState.calculateMagicNumber()
+        cubeState.iterateAndDo((arr: number[]) => {
+            let total = arr.reduce((a, b) => a + b, 0)
+            if(total === magicNumber) {
+                for(let i = 0; i < arr.length; i++) {
+                    const text = NumberText.get(arr[i].toString());
+                    text.material = NumberText.magicMaterial;
+                }
+            }
+        })
     }
 
 
