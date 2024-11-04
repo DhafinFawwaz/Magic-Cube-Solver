@@ -13,38 +13,87 @@ export class GeneticSolver extends Solver {
         this.maxIteration = maxIteration;
 
         // Init cached stuff
-        CubeState.getCubeSwapPairs(degree);
+        // CubeState.getCubeSwapPairs(degree);
     }
 
+    // public process(): CubeState {
+    //     // Control variables
+    //     const populationSize: number = this.populationSize;
+    //     const maxIteration: number = this.maxIteration;
+
+    //     // Fixed
+    //     const mutationRate: number = 0.05;
+
+    //     const degree: number = this.degree;
+    //     let population: CubeState[] = Array.from({ length: populationSize }, () => CubeState.createRandomCube(degree));
+
+    //     let iteration: number = 0;
+    //     while (true) {
+
+    //         let newPopulation: CubeState[] = [];
+    //         for (let i = 0; i < populationSize; i++) {
+    //             const [firstParent, secondParent] = GeneticSolver.chooseRandomPair(population, this.evaluator);
+    //             let child = GeneticSolver.reproduce(firstParent, secondParent);
+    //             if (Math.random() < mutationRate) {
+    //                 GeneticSolver.mutate(child);
+    //             }
+    //             newPopulation.push(child);
+    //         }
+    //         population = newPopulation;
+
+    //         const bestCube: CubeState = population.reduce((best, current) =>
+    //             this.evaluator(current) > this.evaluator(best) ? current : best
+    //         );
+
+    //         if (bestCube.isMagicCube()) {
+    //             return bestCube;
+    //         }
+
+    //         iteration += 1;
+    //         if (iteration >= maxIteration) {
+    //             console.log(Solver.evaluateMagicAmount(bestCube));
+    //             return bestCube;
+    //         }
+    //     }
+    // }
     public process(): CubeState {
         // Control variables
         const populationSize: number = this.populationSize;
         const maxIteration: number = this.maxIteration;
-
-        // Fixed
-        const mutationRate: number = 0.5;
+        const mutationRate: number = 0.05;
 
         const degree: number = this.degree;
         let population: CubeState[] = Array.from({ length: populationSize }, () => CubeState.createRandomCube(degree));
 
         let iteration: number = 0;
         while (true) {
+            // Choose pairs of parents
+            const [parent1, parent2] = GeneticSolver.chooseRandomPair(population, this.evaluator);
+            const [parent3, parent4] = GeneticSolver.chooseRandomPair(population, this.evaluator);
 
-            let newPopulation: CubeState[] = [];
-            for (let i = 0; i < populationSize; i++) {
-                const [firstParent, secondParent] = GeneticSolver.chooseRandomPair(population, this.evaluator);
-                let child = GeneticSolver.reproduce(firstParent, secondParent);
-                if (Math.random() < mutationRate) {
-                    GeneticSolver.mutate(child);
-                }
-                newPopulation.push(child);
-            }
-            population = newPopulation;
+            // Generate children by reproducing parents
+            let [child1, child2] = GeneticSolver.reproduce(parent1, parent2);
+            let [child3, child4] = GeneticSolver.reproduce(parent3, parent4);
 
+            // Remove duplicates of chosen parents from population
+            const uniqueParents = new Set([parent1, parent2, parent3, parent4]);
+            population = population.filter(individual => !uniqueParents.has(individual));
+
+            // Apply mutations to children based on mutation rate
+            if (Math.random() < mutationRate) GeneticSolver.mutate(child1);
+            if (Math.random() < mutationRate) GeneticSolver.mutate(child2);
+            if (Math.random() < mutationRate) GeneticSolver.mutate(child3);
+            if (Math.random() < mutationRate) GeneticSolver.mutate(child4);
+
+            // Add new children to the population
+            population.push(child1, child2, child3, child4);
+
+            // Find the best cube in the current population
             const bestCube: CubeState = population.reduce((best, current) =>
                 this.evaluator(current) > this.evaluator(best) ? current : best
-            );            
+            );
 
+            // Check if the best cube is a magic cube
             if (bestCube.isMagicCube()) {
                 return bestCube;
             }
@@ -55,8 +104,8 @@ export class GeneticSolver extends Solver {
                 return bestCube;
             }
         }
-
     }
+
 
     public static chooseRandomPair(population: CubeState[], evaluator: Evaluator = Solver.evaluateDeviationSqrt): [CubeState, CubeState] {
         const totalScore = population.reduce((sum, cube) => sum + evaluator(cube), 0);
@@ -80,57 +129,82 @@ export class GeneticSolver extends Solver {
         return [first, second];
     }
 
-    public static reproduce(parent1: CubeState, parent2: CubeState, evaluator: Evaluator = Solver.evaluateDeviationSqrt): CubeState {
+    public static reproduce(parent1: CubeState, parent2: CubeState, evaluator: Evaluator = Solver.evaluateDeviationSqrt): [CubeState, CubeState] {
         if (evaluator(parent2) > evaluator(parent1)) {
             [parent1, parent2] = [parent2, parent1];
         }
 
         const n = parent1.content.length;
-        const child: CubeState = parent1.getCopy();
-        const possibleLocations = GeneticSolver.getSpaceDiagonalLocations(n)
-            .concat(GeneticSolver.getFaceDiagonalLocations(n))
-            .concat(GeneticSolver.getParallelSideLocations(n));
+        const child1 = parent1.getCopy();
+        const child2 = parent2.getCopy();
 
-        const fixedNumbers = new Set<number>();
-        for (const location of possibleLocations) {
+        const fixedNumbers1 = GeneticSolver.getFixedNumbers(parent1);
+        const notFixedList1 = GeneticSolver.getNonFixedNumbers(parent1, parent2);
 
-            const locationSum = location.reduce((sum, [i, j, k]) => sum + parent1.content[i][j][k], 0);
-            if (locationSum === CubeState.calculateMagicNumber(n)) {
-                for (const [i, j, k] of location) {
-                    fixedNumbers.add(parent1.content[i][j][k]);
-                }
-            }
-        }
+        const fixedNumbers2 = GeneticSolver.getFixedNumbers(parent2);
+        const notFixedList2 = GeneticSolver.getNonFixedNumbers(parent2, parent1);
 
-        const notFixedList: number[] = [];
-        for (let i = 1; i <= n ** 3; i++) {
-            if (!fixedNumbers.has(i)) {
-                notFixedList.push(i);
-            }
-        }
-
-        notFixedList.sort(() => Math.random() - 0.5);
-
-        let count = 0;
+        let count1 = 0;
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
                 for (let k = 0; k < n; k++) {
-                    if (fixedNumbers.has(child.content[i][j][k])) {
-                        continue;
-                    }
-                    child.content[i][j][k] = notFixedList[count];
-                    count++;
+                    if (fixedNumbers1.has(child1.content[i][j][k])) continue;
+                    child1.content[i][j][k] = notFixedList1[count1++];
                 }
             }
         }
 
-        return child;
+        let count2 = 0;
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+                for (let k = 0; k < n; k++) {
+                    if (fixedNumbers2.has(child2.content[i][j][k])) continue;
+                    child2.content[i][j][k] = notFixedList2[count2++];
+                }
+            }
+        }
+
+        return [child1, child2];
     }
 
     public static mutate(cube: CubeState) {
         cube.swapRandom();
     }
 
+    public static getFixedNumbers(cube: CubeState): Set<number> {
+        const n = cube.content.length;
+        const possibleLocations = GeneticSolver.getSpaceDiagonalLocations(n)
+            .concat(GeneticSolver.getFaceDiagonalLocations(n))
+            .concat(GeneticSolver.getParallelSideLocations(n));
+
+        const fixedNumbers = new Set<number>();
+        for (const location of possibleLocations) {
+            const locationSum = location.reduce((sum, [i, j, k]) => sum + cube.content[i][j][k], 0);
+            if (locationSum === CubeState.calculateMagicNumber(n)) {
+                for (const [i, j, k] of location) {
+                    fixedNumbers.add(cube.content[i][j][k]);
+                }
+            }
+        }
+
+        return fixedNumbers;
+    }
+    public static getNonFixedNumbers(cube: CubeState, otherCube: CubeState): number[] {
+        const fixedNumbers = GeneticSolver.getFixedNumbers(cube);
+        const nonFixedList: number[] = [];
+
+        for (const row of otherCube.content) {
+            for (const subRow of row) {
+                for (const value of subRow) {
+                    if (!fixedNumbers.has(value)) {
+                        nonFixedList.push(value);
+                    }
+                }
+            }
+        }
+
+        return nonFixedList;
+    }
     public static getSpaceDiagonalLocations(n: number): Array<Array<[number, number, number]>> {
         const diagonals: Array<Array<[number, number, number]>> = [];
 
