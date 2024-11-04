@@ -9,14 +9,30 @@ import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomresta
 import { SolverAnimator } from './magic-cube-animator/solver-animator'
 import { LoadingSpinner as LoadingSpinner } from './components/loading-spinner'
 import { MagicLinePlot } from './components/magic-line-plot'
+import { MagicCubeData } from "./magic-cube-animator/magic-cube-data";
 
-function readDegree() {return Number.parseInt((document.getElementById("degree") as HTMLInputElement).value);}
+function readDegree() {return Number.parseInt(degreeInput.value);}
+function setDegree(degree: number) {
+  if (degree < 2) {
+    alert("Degree must be greater than 1");
+    return;
+  }
+  degreeInput.value = degree.toString();
+}
 function createCube(degree: number) {return CubeState.createRandomCube(degree);}
 function readAlgorithmIdx() {return Number.parseInt((document.getElementById("algorithm-select") as HTMLSelectElement).value);}
 function readCurrentParam(idx: number) {
+  try {
+    const parent = algorithmParamContainer!.children[readAlgorithmIdx()];
+    const input: HTMLInputElement = parent!.children[idx].children[1] as HTMLInputElement;
+    return Number.parseInt(input.value);
+  } catch (e){}
+  return -1;
+}
+function setCurrentParam(idx: number, value: number) {
   const parent = algorithmParamContainer!.children[readAlgorithmIdx()];
   const input: HTMLInputElement = parent!.children[idx].children[1] as HTMLInputElement;
-  return Number.parseInt(input.value);
+  input.value = value.toString();
 }
 function generateArrayNumbers(from: number, to: number) {
   const arr = []
@@ -49,6 +65,8 @@ const loadingSpinner = new LoadingSpinner(document.getElementById("loading-conta
 const algorithmParamContainer = document.getElementById("algorithm-param-container");
 const resultContainer = document.getElementById("result-container");
 const statusInfo = document.getElementById("status-info");
+const degreeInput = document.getElementById("degree") as HTMLInputElement;
+let lastMagicCubeData: MagicCubeData;
 
 document.getElementById("algorithm-select")?.addEventListener("change", () => {
   const idx = readAlgorithmIdx();
@@ -63,22 +81,7 @@ document.getElementById("algorithm-select")?.addEventListener("change", () => {
 });
 
 
-function downloadJson(json: {cubeStateList: CubeState[], statusInfo: string}) {
-  const data = JSON.stringify(json);
-  const blob = new Blob([data], { type: "application/json" });
-  const jsonObjectUrl = URL.createObjectURL(blob);
-
-  const filename = "example.json";
-  const anchorEl = document.createElement("a");
-  anchorEl.href = jsonObjectUrl;
-  anchorEl.download = filename;
-
-  anchorEl.click();
-  URL.revokeObjectURL(jsonObjectUrl);
-}
-
-
-document.getElementById("start-button")?.addEventListener("click", async () => {
+document.getElementById("start-button")?.addEventListener("click", () => {
   sliderContainer?.classList.remove("flex");
   sliderContainer?.classList.add("hidden");
   playpauseCheckbox.checked = true;
@@ -98,8 +101,6 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
     const executionTime = performance.now() - startTime;
     const magicAmount = Solver.evaluateMagicAmount(result);
 
-    resultContainer?.classList.remove("hidden");
-    statusInfo!.innerHTML = `Time: ${executionTime.toFixed(2)} ms<br>Magic: ${magicAmount}/${result.maxAmountOfMagic}<br>Score: ${solver.evaluator(result).toFixed(2)}`;
     
     console.log("Solution:")
     console.log(result)
@@ -107,16 +108,22 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
     magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
     magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
     magicLinePlot.update();
+    statusInfo!.innerHTML = `Time: ${executionTime.toFixed(2)} ms<br>Magic: ${magicAmount}/${result.maxAmountOfMagic}<br>Score: ${solver.evaluator(result).toFixed(2)}`;
   
+    resultContainer?.classList.remove("hidden");
     sliderContainer?.classList.remove('hidden');
     sliderContainer?.classList.add('flex');
     slider?.setAttribute('value', '0');
     loadingSpinner.setActive(false);
 
-    downloadJson({
-      cubeStateList: solverAnimator.cubeStateList,
-      statusInfo: statusInfo!.innerHTML
-    });
+
+    // for saving
+    const firstParam = readCurrentParam(0);
+    const secondParam = readCurrentParam(1);
+    const param = [];
+    if(firstParam !== -1) param.push(firstParam);
+    if(secondParam !== -1) param.push(secondParam);
+    lastMagicCubeData = new MagicCubeData(readAlgorithmIdx(), param, readDegree(), statusInfo!.innerHTML, solverAnimator.cubeStateList, result);
   }, 10);
 });
 document.getElementById("generate-button")?.addEventListener("click", () => {
@@ -192,10 +199,7 @@ showPlotButton?.addEventListener("click", () => {
 
 
 document.getElementById("export-button")?.addEventListener("click", () => {
-  downloadJson({
-    cubeStateList: solverAnimator.cubeStateList,
-    statusInfo: statusInfo!.innerHTML
-  });
+  lastMagicCubeData.download();
 });
 
 document.getElementById("import-input")?.addEventListener("change", (e) => {
@@ -204,7 +208,36 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
   reader.onload = (e) => {
     const data = e.target!.result;
     const json = JSON.parse(data as string);
-    solverAnimator.cubeStateList = json;
+    const magicCubeData: MagicCubeData = json;
+
+    
+    selectedSolver = solverList[magicCubeData.algorithmIdx]();
+    for(let i = 0; i < magicCubeData.param.length; i++) setCurrentParam(i, magicCubeData.param[i]);
+    setDegree(magicCubeData.degree);
+    statusInfo!.innerHTML = magicCubeData.statusInfo;
+    solverAnimator.cubeStateList = magicCubeData.cubeStateList;
+    solverAnimator.setCube(magicCubeData.finalState);
+
+    lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState);
+
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateList.map(state => {
+      const stateObj = new CubeState();
+      stateObj.content = state.content;
+      stateObj.from = state.from;
+      stateObj.to = state.to;
+      const res = selectedSolver.evaluator(stateObj)
+      return res;
+    }));
+    magicLinePlot.update();
+    statusInfo!.innerHTML = magicCubeData.statusInfo;
+    
+  
+    resultContainer?.classList.remove("hidden");
+    sliderContainer?.classList.remove('hidden');
+    sliderContainer?.classList.add('flex');
+    slider?.setAttribute('value', '0');
+    loadingSpinner.setActive(false);
   };
   reader.readAsText(file);
 });
