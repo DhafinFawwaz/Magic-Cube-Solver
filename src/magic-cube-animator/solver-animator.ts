@@ -44,6 +44,15 @@ export class SolverAnimator {
 
         this.view = view;
     }
+
+    public get playbackSpeed() {
+        return 1/this.iterationDuration;
+    }
+    public setPlaybackSpeed(multiplier: number) {
+        this.iterationDuration = 1/multiplier;
+    }
+
+
     public load(onLoaded: () => void) {
         NumberText.load(() => {
             this.view.appendChild(this.renderer.domElement);
