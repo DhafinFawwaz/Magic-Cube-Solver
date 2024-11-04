@@ -21,16 +21,10 @@
     <div id="3d-view"></div>
 
     <!-- Top Right GUI -->
-    <div
-      class="fixed top-0 right-0 grid grid-rows-2 gap-2 bg-zinc-900 p-2 rounded-bl-xl drop-shadow-lg"
-    >
+    <div class="fixed top-0 right-0 flex flex-col gap-2 bg-zinc-900 p-2 rounded-bl-xl drop-shadow-lg">
       <div>
         <div class="text-sm text-slate-50 mb-1">Algorithm</div>
-        <select
-          class="cursor-pointer rounded-lg bg-zinc-800 text-slate-50 text-sm pl-2.5 outline-none focus:ring-1 hover:ring-1 ring-indigo-700 h-8"
-          name="Algorithm"
-          id="algorithm-select"
-        >
+        <select class="cursor-pointer rounded-lg bg-zinc-800 text-slate-50 text-sm pl-2.5 outline-none focus:ring-1 hover:ring-1 ring-indigo-700 h-8" name="Algorithm" id="algorithm-select">
           <option class="cursor-pointer" value="0" selected>
             Steepest Ascent
           </option>
@@ -46,61 +40,22 @@
 
       <div id="algorithm-param-container">
         <!-- Steepest Ascent -->
-        <div class="grid-cols-1 gap-2 grid">
-          <div>
-            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input
-              id="max-iteration-steepest-ascent"
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
-            />
-          </div>
-        </div>
+        <div class="hidden"><div class="hidden"></div></div>
 
         <!-- Steepest Ascent with Sideways Move -->
-        <div class="grid-cols-2 gap-2 hidden">
-          <div>
-            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
-            />
-          </div>
+        <div class="grid-cols-1 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Sideways</div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="100"
             />
           </div>
         </div>
 
         <!-- Random Restart -->
-        <div class="grid-cols-2 gap-2 hidden">
-          <div>
-            <div class="text-2xs text-slate-50 mt-1 mb-1">
-              Max Iteration/Restart
-            </div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
-            />
-          </div>
+        <div class="grid-cols-1 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Restart</div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="5"
             />
           </div>
         </div>
@@ -114,36 +69,18 @@
         </div>
 
         <!-- Simulated Annealing -->
-        <div class="grid-cols-1 gap-2 hidden">
-          <div>
-            <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-full bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
-            />
-          </div>
-        </div>
-
+        <div class="hidden"><div class="hidden"></div></div>
+        
         <!-- Genetic -->
         <div class="grid-cols-2 gap-2 hidden">
           <div>
             <div class="text-sm text-slate-50 mb-1">Max Iteration</div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="5"
             />
           </div>
           <div>
             <div class="text-sm text-slate-50 mb-1">Population</div>
-            <input
-              class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-              id="degree"
-              type="number"
-              value="5"
+            <input class="cursor-text text-sm rounded-lg pl-2.5 h-8 w-24 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo ring-inset" id="degree" type="number" value="5"
             />
           </div>
         </div>
@@ -152,28 +89,22 @@
       <div>
         <div class="text-sm text-slate-50 mb-1">Degree</div>
         <div class="flex gap-2 h-8">
-          <input
-            class="cursor-text text-sm rounded-lg pl-2.5 w-32 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset"
-            id="degree"
-            type="number"
-            value="5"
-          />
-          <button
-            id="generate-button"
-            class="bg-green-600 text-sm hover:bg-green-700 focus:ring-4 ring-green-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer"
-          >
+          <input class="cursor-text text-sm rounded-lg pl-2.5 w-32 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="degree" type="number" value="5"/>
+          <button id="generate-button" class="bg-green-600 text-sm hover:bg-green-700 focus:ring-4 ring-green-800 text-slate-50 px-2 w-full py-1 rounded-lg cursor-pointer font-semibold">
             Generate
           </button>
         </div>
       </div>
 
-      <button id="start-button" class="bg-indigo-600 h-8 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer mt-1.5">Solve</button>
+      <button id="start-button" class="bg-indigo-600 h-8 text-sm hover:bg-indigo-700 focus:ring-4 ring-indigo-800 text-slate-50 px-4 w-full py-1 rounded-lg cursor-pointer mt-1.5 font-semibold">Solve</button>
+
+      <hr id="divider" class="bg-zinc-900 border-zinc-700 mt-2 hidden">
 
       <!-- Info status -->
-      <div id="info" class="text-sm text-slate-50"></div>
+      <div id="status-info" class="text-sm text-slate-50 hidden"></div>
       
       <!-- Show plot button -->
-      <button id="show-plot-button" class="bg-blue-600 h-8 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer">Show Plot</button>
+      <button id="show-plot-button" class="bg-blue-600 h-8 text-sm hover:bg-blue-700 focus:ring-4 ring-blue-800 text-slate-50 px-4 py-1 rounded-lg cursor-pointer hidden font-semibold">Show Plot</button>
     </div>
 
     <!-- Slider Player -->
@@ -247,8 +178,8 @@
         <div class="relative bg-zinc-900 max-w-[40rem] max-h-[30rem] w-full h-full opacity-100 p-4 rounded-xl flex items-center">
           <canvas class="" id="chart-canvas"></canvas>
           
-          <button id="plot-close-button" class="hover:bg-zinc-700 outline-none focus:ring-4 ring-zinc-800 absolute grid place-items-center h-9 w-9 bg-zinc-600 rounded-lg cursor-pointer top-0 right-0 m-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="white" d="M15.1 3.1L12.9.9L8 5.9L3.1.9L.9 3.1l5 4.9l-5 4.9l2.2 2.2l4.9-5l4.9 5l2.2-2.2l-5-4.9z"/></svg>
+          <button id="plot-close-button" class="hover:bg-zinc-700 outline-none focus:ring-4 ring-zinc-600 absolute grid place-items-center h-9 w-9 bg-zinc-800 rounded-lg cursor-pointer top-0 right-0 m-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="#aaaaaa" d="M15.1 3.1L12.9.9L8 5.9L3.1.9L.9 3.1l5 4.9l-5 4.9l2.2 2.2l4.9-5l4.9 5l2.2-2.2l-5-4.9z"/></svg>
           </button>
         </div>
       </div>

@@ -5,7 +5,7 @@ export type CubeStateChangeCallback = (cube: CubeState) => void;
 
 export abstract class Solver {
     public static logConsoleEnabled = true;
-    protected evaluator: Evaluator;
+    public evaluator: Evaluator;
     protected onStateChange?: CubeStateChangeCallback;
     public constructor(onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
         this.onStateChange = onStateChange;

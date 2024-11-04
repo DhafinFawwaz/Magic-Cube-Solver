@@ -3,6 +3,15 @@ import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointEl
 Chart.register(LineController, LineElement, LinearScale, CategoryScale, PointElement);
 
 export class MagicLinePlot extends Chart {
+
+    public setX(data: number[]) {
+        this.data.labels = data;
+    }
+
+    public setY(data: number[]) {
+        this.data.datasets[0].data = data;
+    }
+
     public constructor(canvas: HTMLCanvasElement) {
         super(
             canvas, {
@@ -10,11 +19,11 @@ export class MagicLinePlot extends Chart {
             data: {
                 labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
                 datasets: [{
-                label: 'My First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1,
+                    label: 'My First Dataset',
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
                 }]
             },
             options: {

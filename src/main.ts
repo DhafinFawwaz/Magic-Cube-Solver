@@ -8,7 +8,6 @@ import { GeneticSolver } from "./magic-cube/solver/genetic-solver";
 import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomrestarthillclimbing-solver'
 import { SolverAnimator } from './magic-cube-animator/solver-animator'
 import { LoadingSpinner as LoadingSpinner } from './components/loading-spinner'
-import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement } from 'chart.js'
 import { MagicLinePlot } from './components/magic-line-plot'
 
 function readDegree() {return Number.parseInt((document.getElementById("degree") as HTMLInputElement).value);}
@@ -18,6 +17,11 @@ function readCurrentParam(idx: number) {
   const parent = algorithmParamContainer!.children[readAlgorithmIdx()];
   const input: HTMLInputElement = parent!.children[idx].children[1] as HTMLInputElement;
   return Number.parseInt(input.value);
+}
+function generateArrayNumbers(from: number, to: number) {
+  const arr = []
+  for(let i = from; i < to; i++) arr.push(i);
+  return arr;
 }
 
 let currentCube = createCube(5);
@@ -30,7 +34,7 @@ const solverList = [
   () => new SteepestAscentSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
   () => new SidewaysMoveSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
   () => new RandomRestartHillClimbingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
-  () => new StochasticSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new StochasticSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
   () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
   () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e)),
 ];
@@ -41,12 +45,9 @@ const sliderContainer = document.getElementById("slider-container");
 const playpauseCheckbox: HTMLInputElement = document.getElementById("playpause") as HTMLInputElement;
 const slider: HTMLInputElement = document.getElementById("slider")! as HTMLInputElement;
 solverAnimator.slider = slider;
-const loadingSpinner = new LoadingSpinner(
-  document.getElementById("loading-container")!
-);
-const algorithmParamContainer = document.getElementById(
-  "algorithm-param-container"
-);
+const loadingSpinner = new LoadingSpinner(document.getElementById("loading-container")!);
+const algorithmParamContainer = document.getElementById("algorithm-param-container");
+const hrLine = document.getElementById("divider");
 
 document.getElementById("algorithm-select")?.addEventListener("change", () => {
   const idx = readAlgorithmIdx();
@@ -72,15 +73,28 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
     console.log("Problem:");
     console.log(currentCube);
     const solver: Solver = solverList[readAlgorithmIdx()]();
+
+    const startTime = performance.now();
     const result = solver.solve()
+    const executionTime = performance.now() - startTime;
+    const magicAmount = Solver.evaluateMagicAmount(result);
+
+    statusInfo?.classList.remove("hidden");
+    statusInfo!.innerHTML = `Time: ${executionTime.toFixed(2)} ms<br>Magic: ${magicAmount}/${result.maxAmountOfMagic}<br>Score: ${solver.evaluator(result).toFixed(2)}`;
+    
     console.log("Solution:")
     console.log(result)
     solverAnimator.setCube(result);
-  
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+    magicLinePlot.update();
+
+    showPlotButton?.classList.remove("hidden");
     sliderContainer?.classList.remove('hidden');
     sliderContainer?.classList.add('flex');
     slider?.setAttribute('value', '0');
     loadingSpinner.setActive(false);
+    hrLine?.classList.remove("hidden");
   }, 10);
 });
 document.getElementById("generate-button")?.addEventListener("click", () => {
@@ -120,12 +134,11 @@ slider.addEventListener("input", () => {
 });
 
 // On space click, click the start-button
-document.addEventListener("keydown", (e) => {
-  e.preventDefault();
-  if (e.key === " ") {
-    document.getElementById("playpause")?.click();
-  }
-});
+// document.addEventListener("keydown", (e) => {
+//   if (e.key === " ") {
+//     playpauseCheckbox.click();
+//   }
+// });
 
 document
   .getElementById("playbackspeed")
@@ -142,7 +155,6 @@ document
 
 const canvas: HTMLCanvasElement = document.getElementById("chart-canvas") as HTMLCanvasElement;
 const magicLinePlot = new MagicLinePlot(canvas);
-magicLinePlot.data.labels = ["bruh", "bruh", "bruh", "bruh", "bruh", "bruh"];
 magicLinePlot.update();
 
 const chartContainer = document.getElementById("chart-container");
@@ -154,8 +166,8 @@ document.getElementById("plot-close-button")?.addEventListener("click", () => {
   chartContainer?.classList.remove("opacity-100");
   chartContainer?.classList.add("opacity-0");
 })
-
-document.getElementById("show-plot-button")?.addEventListener("click", () => {
+const showPlotButton = document.getElementById("show-plot-button");
+showPlotButton?.addEventListener("click", () => {
   // chartContainer?.classList.remove("hidden");
   chartContainer?.classList.remove("invisible");
   chartContainer?.classList.add("visible");
@@ -163,3 +175,5 @@ document.getElementById("show-plot-button")?.addEventListener("click", () => {
   chartContainer?.classList.remove("opacity-0");
   chartContainer?.classList.add("opacity-100");
 })
+
+const statusInfo = document.getElementById("status-info");
