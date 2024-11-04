@@ -29,8 +29,8 @@ export class SimulatedAnnealingSolver extends Solver {
   ) {
     super(onStateChange, evaluator);
     this.initialCube = cube;
-    this.initialTemperature = 2e20;
-    this.finalTemperature = 1;
+    this.initialTemperature = 1000;
+    this.finalTemperature = 1e-20;
     this.coolingRate = 0.999;
     this.onDeltaEIteration = onDeltaEIteration;
 
