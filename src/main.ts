@@ -167,16 +167,17 @@ document.getElementById("start-button")?.addEventListener("click", () => {
         solver.getAdditionalInformation()["numIteration"];
     }
     if (solver.getAdditionalInformation()["stuckFrequency"]) {
+      additionalMessage += "<br>";
       additionalMessage +=
         "<br>Stuck frequency: " +
         solver.getAdditionalInformation()["stuckFrequency"];
     }
     if (solver.getAdditionalInformation()["iterationCounter"]) {
+      additionalMessage += "<br>";
       additionalMessage +=
         "<br>Iteration Count: " +
         solver.getAdditionalInformation()["iterationCounter"];
     }
-
     if (solver.getAdditionalInformation()["iterationPerRestart"]) {
       let temp = solver.getAdditionalInformation()["iterationPerRestart"];
       for (let i = 0; i < temp.length; i++) {
