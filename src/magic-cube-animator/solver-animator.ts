@@ -230,6 +230,9 @@ export class SolverAnimator {
         const cubeState = this.cubeStateList[currentIdx];
         const from = cubeState.from!;
         const to = cubeState.to!;
+
+        if(!cubeState || !from || !to) return;
+
         this.setTransparentCube(cubeState);
 
         this.applyMagicLine(cubeState);

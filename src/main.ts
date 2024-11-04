@@ -66,7 +66,7 @@ const solverList = [
   () => new RandomRestartHillClimbingSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
   () => new StochasticSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeStateSecondaryList.push(e)),
   () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeProbabilityList.push(e)),
-  () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e)),
+  () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeStateSecondaryList.push(e)),
 ];
 
 let selectedSolver = solverList[0]();
@@ -121,6 +121,22 @@ function applyMagicLinePlot(solver: Solver) {
 
     switchPlotButton?.classList.remove("hidden");
 
+    plot1Title!.textContent = "x = iteration, y = score";
+    plot2Title!.textContent = "x = iteration, y = e^(ΔE/T)";
+
+  } else if(solver instanceof GeneticSolver) {
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+    magicLinePlot.update();
+
+    magicLinePlot2.setX(generateArrayNumbers(1, solverAnimator.cubeStateSecondaryList.length + 1));
+    magicLinePlot2.setY(solverAnimator.cubeStateSecondaryList.map(state => solver.evaluator(state)));
+    magicLinePlot2.update();
+
+    switchPlotButton?.classList.remove("hidden");
+    
+    plot1Title!.textContent = "x = iteration, y = max score";
+    plot2Title!.textContent = "x = iteration, y = median score";
   } else {
     magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
     magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
@@ -140,16 +156,23 @@ document.getElementById("start-button")?.addEventListener("click", () => {
   solverAnimator.cubeStateList = [];
   solverAnimator.cubeStateSecondaryList = [];
   solverAnimator.cubeProbabilityList = [];
-
+  
   setTimeout(() => {
     console.log("Problem:");
     console.log(currentCube);
     const solver: Solver = solverList[readAlgorithmIdx()]();
-
+    
     const startTime = performance.now();
     const result = solver.solve();
     const executionTime = performance.now() - startTime;
     const magicAmount = Solver.evaluateMagicAmount(result);
+
+    
+    // Genetic only initial state
+    if(solver instanceof GeneticSolver) {
+      currentCube = solver.bestInitialState!;
+    }
+    //
 
     console.log("Solution:");
     console.log(result);
@@ -377,3 +400,7 @@ showInitialButton?.addEventListener("click", () => {
 showFinalButton?.addEventListener("click", () => {
   solverAnimator.setTemporaryCube(lastMagicCubeData.finalState);
 });
+
+
+const plot1Title = document.getElementById("plot-1-title");
+const plot2Title = document.getElementById("plot-2-title");
