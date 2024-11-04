@@ -75,4 +75,7 @@ export abstract class Solver {
   public getAdditionalInformation(): any {
     return {};
   }
+  public getIteration(): any {
+    return {};
+  }
 }

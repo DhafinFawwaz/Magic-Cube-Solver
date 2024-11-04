@@ -5,6 +5,7 @@ import { SteepestAscentSolver } from "./steepestascent-solver";
 export class RandomRestartHillClimbingSolver extends Solver {
   public initialCube: CubeState;
   private maxRestarts: number;
+  private iterationPerRestart: number[];
 
   /**
    * Constructs a RandomRestartHillClimbingSolver.
@@ -23,6 +24,8 @@ export class RandomRestartHillClimbingSolver extends Solver {
     super(onStateChange, evaluator);
     this.initialCube = cube;
     this.maxRestarts = maxRestarts;
+    this.iterationPerRestart = [];
+    
 
     // Initialize cached properties
     this.initialCube.calculateMagicNumber();
@@ -54,6 +57,7 @@ export class RandomRestartHillClimbingSolver extends Solver {
         evaluator
       );
       let current = solver.process();
+      this.iterationPerRestart.push(solver.getIteration());
 
       let currentScore = evaluator(current);
 
@@ -76,4 +80,10 @@ export class RandomRestartHillClimbingSolver extends Solver {
     this.log(startTime, best, evaluator, this.maxRestarts, this.maxRestarts);
     return best;
   }
+
+  public getAdditionalInformation(): Object {
+    return {
+      iterationPerRestart: this.iterationPerRestart,
+    };
+}
 }

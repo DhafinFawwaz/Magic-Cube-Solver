@@ -3,6 +3,7 @@ import { CubeStateChangeCallback, Evaluator, Solver } from "../solver";
 
 export class SteepestAscentSolver extends Solver {
     public initialCube: CubeState;
+    public iterationCounter = 0;
 
     public constructor(cube: CubeState, onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
         super(onStateChange, evaluator);
@@ -15,21 +16,23 @@ export class SteepestAscentSolver extends Solver {
     }
 
     public process(): CubeState {
+        this.iterationCounter = 0;
         let startTime = performance.now()
         const { evaluator, onStateChange } = this;
 
         let current = this.initialCube.getCopy()
         while (!current.isMagicCube()) {
+            this.iterationCounter++;
             const neighbor = SteepestAscentSolver.getHighestSuccessorByPairs(current, evaluator)
             
             if (evaluator(neighbor) <= evaluator(current)) {
-                this.log(startTime, current, evaluator, 0, 0)
+                this.log(startTime, current, evaluator, this.iterationCounter)
                 return current
             }
             current = neighbor.getCopy();
             onStateChange?.(neighbor)
 
-            this.log(startTime, current, evaluator)
+            this.log(startTime, current, evaluator,this.iterationCounter)
         }
 
         return current
@@ -54,5 +57,15 @@ export class SteepestAscentSolver extends Solver {
         let highestCube = cube.getCopy();
         highestCube.swap(highestPair[0][0], highestPair[0][1], highestPair[0][2], highestPair[1][0], highestPair[1][1], highestPair[1][2]);
         return highestCube;
+    }
+
+    public getIteration() {
+        return this.iterationCounter;
+    }
+
+    public getAdditionalInformation(): Object {
+        return {
+          iterationCounter: this.iterationCounter,
+        };
     }
 }

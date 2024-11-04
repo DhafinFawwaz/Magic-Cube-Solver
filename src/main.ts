@@ -166,6 +166,22 @@ document.getElementById("start-button")?.addEventListener("click", () => {
         "Stuck frequency: " +
         solver.getAdditionalInformation()["stuckFrequency"];
     }
+    if (solver.getAdditionalInformation()["iterationCounter"]) {
+      additionalMessage +=
+        "Iteration Count: " +
+        solver.getAdditionalInformation()["iterationCounter"];
+    }
+    if (solver.getAdditionalInformation()["iterationPerRestart"]){
+      let temp = solver.getAdditionalInformation()["iterationPerRestart"];
+      for(let i = 0 ; i < temp.length; i++){
+        if(i != 0){
+          additionalMessage += "<br>";
+        }
+        additionalMessage +=
+        "Iteration Count on "+ i +"-th restart: " +
+        temp[i];
+      }
+    }
 
     statusInfo!.innerHTML = mandatoryMessage + "<br>" + additionalMessage;
 
