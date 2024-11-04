@@ -105,27 +105,27 @@ document.getElementById("algorithm-select")?.addEventListener("change", () => {
 function applyMagicLinePlot(solver: Solver) {
   switchPlotButton?.classList.add("hidden");
 
-    if(solver instanceof StochasticSolver) {
-      magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateSecondaryList.length + 1));
-      magicLinePlot.setY(solverAnimator.cubeStateSecondaryList.map(state => solver.evaluator(state)));
-      magicLinePlot.update();
+  if(solver instanceof StochasticSolver) {
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateSecondaryList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateSecondaryList.map(state => solver.evaluator(state)));
+    magicLinePlot.update();
 
-    } else if(solver instanceof SimulatedAnnealingSolver) {
-      magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
-      magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
-      magicLinePlot.update();
+  } else if(solver instanceof SimulatedAnnealingSolver) {
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+    magicLinePlot.update();
 
-      magicLinePlot2.setX(generateArrayNumbers(1, solverAnimator.cubeProbabilityList.length + 1));
-      magicLinePlot2.setY(solverAnimator.cubeProbabilityList);
-      magicLinePlot2.update();
+    magicLinePlot2.setX(generateArrayNumbers(1, solverAnimator.cubeProbabilityList.length + 1));
+    magicLinePlot2.setY(solverAnimator.cubeProbabilityList);
+    magicLinePlot2.update();
 
-      switchPlotButton?.classList.remove("hidden");
+    switchPlotButton?.classList.remove("hidden");
 
-    } else {
-      magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
-      magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
-      magicLinePlot.update();
-    }
+  } else {
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+    magicLinePlot.update();
+  }
 }
 
 document.getElementById("start-button")?.addEventListener("click", () => {
@@ -133,10 +133,13 @@ document.getElementById("start-button")?.addEventListener("click", () => {
   sliderContainer?.classList.add("hidden");
   playpauseCheckbox.checked = true;
   slider.value = "0";
-  solverAnimator.clearAnimationStateList();
   loadingSpinner.setActive(true);
   solverAnimator.pause();
   solverAnimator.setNormalizedTime(0);
+
+  solverAnimator.cubeStateList = [];
+  solverAnimator.cubeStateSecondaryList = [];
+  solverAnimator.cubeProbabilityList = [];
 
   setTimeout(() => {
     console.log("Problem:");
@@ -205,7 +208,9 @@ document.getElementById("start-button")?.addEventListener("click", () => {
       readDegree(),
       statusInfo!.innerHTML,
       solverAnimator.cubeStateList,
-      result
+      result,
+      solverAnimator.cubeStateSecondaryList,
+      solverAnimator.cubeProbabilityList
     );
   }, 10);
 });
