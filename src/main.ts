@@ -406,3 +406,14 @@ showFinalButton?.addEventListener("click", () => {
 
 const plot1Title = document.getElementById("plot-1-title");
 const plot2Title = document.getElementById("plot-2-title");
+
+
+const showGUIButton = document.getElementById("show-gui-button");
+const hideGUIButton = document.getElementById("hide-gui-button");
+const guiContainer = document.getElementById("gui-container");
+showGUIButton?.addEventListener("click", () => {
+  guiContainer?.classList.remove("hidden");
+});
+hideGUIButton?.addEventListener("click", () => {
+  guiContainer?.classList.add("hidden");
+});
