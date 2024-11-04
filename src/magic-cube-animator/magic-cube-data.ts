@@ -22,7 +22,7 @@ export class MagicCubeData {
         const blob = new Blob([data], { type: "application/json" });
         const jsonObjectUrl = URL.createObjectURL(blob);
 
-        const filename = "example.json";
+        const filename = "export.json";
         const anchorEl = document.createElement("a");
         anchorEl.href = jsonObjectUrl;
         anchorEl.download = filename;

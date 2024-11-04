@@ -21,6 +21,9 @@ function setDegree(degree: number) {
 }
 function createCube(degree: number) {return CubeState.createRandomCube(degree);}
 function readAlgorithmIdx() {return Number.parseInt((document.getElementById("algorithm-select") as HTMLSelectElement).value);}
+function setAlgorithmIdx(idx: number) {
+  (document.getElementById("algorithm-select") as HTMLSelectElement).value = idx.toString();
+}
 function readCurrentParam(idx: number) {
   try {
     const parent = algorithmParamContainer!.children[readAlgorithmIdx()];
@@ -212,6 +215,7 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
 
     
     selectedSolver = solverList[magicCubeData.algorithmIdx]();
+    setAlgorithmIdx(magicCubeData.algorithmIdx);
     for(let i = 0; i < magicCubeData.param.length; i++) setCurrentParam(i, magicCubeData.param[i]);
     setDegree(magicCubeData.degree);
     statusInfo!.innerHTML = magicCubeData.statusInfo;
