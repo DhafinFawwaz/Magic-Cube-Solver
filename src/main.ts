@@ -1,9 +1,9 @@
-import { CubeState } from './magic-cube/cube-state'
-import { Solver } from './magic-cube/solver'
-import { StochasticSolver } from './magic-cube/solver/stochastic-solver'
-import { SteepestAscentSolver } from './magic-cube/solver/steepestascent-solver'
-import { SidewaysMoveSolver } from './magic-cube/solver/sidwaysmove-solver'
-import { SimulatedAnnealingSolver } from './magic-cube/solver/simulatedannealing-solver'
+import { CubeState } from "./magic-cube/cube-state";
+import { Solver } from "./magic-cube/solver";
+import { StochasticSolver } from "./magic-cube/solver/stochastic-solver";
+import { SteepestAscentSolver } from "./magic-cube/solver/steepestascent-solver";
+import { SidewaysMoveSolver } from "./magic-cube/solver/sidwaysmove-solver";
+import { SimulatedAnnealingSolver } from "./magic-cube/solver/simulatedannealing-solver";
 import { GeneticSolver } from "./magic-cube/solver/genetic-solver";
 import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomrestarthillclimbing-solver'
 import { SolverAnimator } from './magic-cube-animator/solver-animator'
@@ -41,20 +41,23 @@ const sliderContainer = document.getElementById("slider-container");
 const playpauseCheckbox: HTMLInputElement = document.getElementById("playpause") as HTMLInputElement;
 const slider: HTMLInputElement = document.getElementById("slider")! as HTMLInputElement;
 solverAnimator.slider = slider;
-const loadingSpinner = new LoadingSpinner(document.getElementById("loading-container")!); 
-const algorithmParamContainer = document.getElementById("algorithm-param-container");
+const loadingSpinner = new LoadingSpinner(
+  document.getElementById("loading-container")!
+);
+const algorithmParamContainer = document.getElementById(
+  "algorithm-param-container"
+);
 
 document.getElementById("algorithm-select")?.addEventListener("change", () => {
   const idx = readAlgorithmIdx();
   selectedSolver = solverList[idx]();
   for (let i = 0; i < algorithmParamContainer!.children.length; i++) {
     const child = algorithmParamContainer!.children[i];
-    child.classList.remove("grid")
-    child.classList.add("hidden")
+    child.classList.remove("grid");
+    child.classList.add("hidden");
   }
   algorithmParamContainer!.children[idx].classList.remove("hidden");
   algorithmParamContainer!.children[idx].classList.add("grid");
-
 });
 
 document.getElementById("start-button")?.addEventListener("click", async () => {
@@ -78,9 +81,9 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
     sliderContainer?.classList.add('flex');
     slider?.setAttribute('value', '0');
     loadingSpinner.setActive(false);
-  }, 10)
-})
-document.getElementById('generate-button')?.addEventListener('click', () => {
+  }, 10);
+});
+document.getElementById("generate-button")?.addEventListener("click", () => {
   const degree = readDegree();
   if (degree < 2) {
     alert("Degree must be greater than 1");
@@ -118,13 +121,16 @@ slider.addEventListener("input", () => {
 
 // On space click, click the start-button
 document.addEventListener("keydown", (e) => {
+  e.preventDefault();
   if (e.key === " ") {
-    document.querySelector(".playpause")?.dispatchEvent(new Event("click"));
+    document.getElementById("playpause")?.click();
   }
 });
 
-document.getElementById("playbackspeed")?.addEventListener("change", (e: any) => {
-  const val = e!.target!.value;
+document
+  .getElementById("playbackspeed")
+  ?.addEventListener("change", (e: any) => {
+    const val = e!.target!.value;
 
   if(val <= 0) {
     alert("Playback Speed must be bigger than 0");

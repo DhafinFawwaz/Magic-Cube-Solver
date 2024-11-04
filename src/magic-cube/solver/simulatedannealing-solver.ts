@@ -5,7 +5,10 @@ export class SimulatedAnnealingSolver extends Solver {
   public initialCube: CubeState;
   private initialTemperature: number;
   private finalTemperature: number;
+  private temperature?: number;
   private coolingRate: number;
+  private current?: CubeState;
+  private currentScore?: number;
 
   /**
    * Constructs a SimulatedAnnealingSolver.
@@ -39,57 +42,56 @@ export class SimulatedAnnealingSolver extends Solver {
    */
   public process(): CubeState {
     let startTime = performance.now();
-    const { evaluator, onStateChange } = this;
+    const { evaluator } = this;
 
-    let current = this.initialCube.getCopy();
-    let currentScore = evaluator(current);
-    let temperature = this.initialTemperature;
+    this.current = this.initialCube.getCopy();
+    this.currentScore = evaluator(this.current);
+
+    this.temperature = this.initialTemperature;
+
     let iteration = 0;
 
-    while (temperature > this.finalTemperature && !current.isMagicCube()) {
+    while (
+      this.temperature > this.finalTemperature &&
+      !this.current.isMagicCube()
+    ) {
       iteration++;
+
       // Generate a random neighbor
-      let neighbor = current.getRandomSuccessor();
+      let neighbor = this.current.getRandomSuccessor();
       let neighborScore = evaluator(neighbor);
-      let delta = neighborScore - currentScore;
+      let delta = neighborScore - this.currentScore;
 
       if (delta > 0) {
-        // Accept the better neighbor
-        current = neighbor;
-        currentScore = neighborScore;
-        onStateChange?.(current);
-        console.log(
-          `Iteration ${iteration}: Accepted,  better score ${currentScore}`
-        );
+        this.accept(neighbor, neighborScore);
       } else {
         // Accept the worse neighbor with a probability
-        let probability = Math.exp(delta / temperature);
+        let probability = Math.exp(delta / this.temperature);
+
         if (Math.random() < probability) {
-          current = neighbor;
-          currentScore = neighborScore;
-          onStateChange?.(current);
-          console.log(
-            `Iteration ${iteration}: Accepted, worse score ${currentScore} with probability ${probability.toFixed(
-              4
-            )}`
-          );
+          this.accept(neighbor, neighborScore);
         }
       }
 
-      // Cool down the temperature
-      temperature *= this.coolingRate;
-      this.log(startTime, current, evaluator, iteration);
+      this.cooldown();
+      this.log(startTime, this.current, evaluator, iteration);
     }
 
-    if (current.isMagicCube()) {
-      console.log(`Magic cube found in ${iteration} iterations.`);
-    } else {
-      console.log(
-        `Simulated Annealing completed after ${iteration} iterations with score ${currentScore}.`
-      );
-    }
+    this.log(startTime, this.current, evaluator, iteration);
 
-    this.log(startTime, current, evaluator, iteration);
-    return current;
+    return this.current;
+  }
+
+  private accept(neighbor: CubeState, neighborScore: number) {
+    const { onStateChange } = this;
+
+    this.current = neighbor.getCopy();
+    this.currentScore = neighborScore;
+    onStateChange?.(this.current);
+  }
+
+  private cooldown() {
+    if (!this.temperature) return;
+    this.temperature = this.temperature * this.coolingRate;
   }
 }
