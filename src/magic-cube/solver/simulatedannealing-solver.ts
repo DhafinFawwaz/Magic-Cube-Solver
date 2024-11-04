@@ -9,6 +9,7 @@ export class SimulatedAnnealingSolver extends Solver {
   private coolingRate: number;
   private current?: CubeState;
   private currentScore?: number;
+  private stuckFrequency = 0;
 
   /**
    * Constructs a SimulatedAnnealingSolver.
@@ -26,8 +27,8 @@ export class SimulatedAnnealingSolver extends Solver {
   ) {
     super(onStateChange, evaluator);
     this.initialCube = cube;
-    this.initialTemperature = 2000;
-    this.finalTemperature = 0;
+    this.initialTemperature = 2e20;
+    this.finalTemperature = 1;
     this.coolingRate = 0.999;
 
     // Initialize cached properties
@@ -50,6 +51,7 @@ export class SimulatedAnnealingSolver extends Solver {
     this.temperature = this.initialTemperature;
 
     let iteration = 0;
+    this.stuckFrequency = 0;
 
     while (
       this.temperature > this.finalTemperature &&
@@ -69,6 +71,9 @@ export class SimulatedAnnealingSolver extends Solver {
         let probability = Math.exp(delta / this.temperature);
 
         if (Math.random() < probability) {
+          // Assume: stuck frequncy is the number of times it gets to here
+          this.stuckFrequency++;
+
           this.accept(neighbor, neighborScore);
         }
       }
@@ -93,5 +98,15 @@ export class SimulatedAnnealingSolver extends Solver {
   private cooldown() {
     if (!this.temperature) return;
     this.temperature = this.temperature * this.coolingRate;
+  }
+
+  private getStuckFrequency() {
+    return this.stuckFrequency;
+  }
+
+  public getAdditionalInformation(): Object {
+    return {
+      stuckFrequency: this.stuckFrequency,
+    };
   }
 }
