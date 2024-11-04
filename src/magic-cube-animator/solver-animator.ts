@@ -3,6 +3,7 @@ import { CubeState } from "../magic-cube/cube-state";
 import * as THREE from 'three';
 import { NumberText } from "./number-text";
 import { inverseLerp } from "three/src/math/MathUtils.js";
+import { MagicLine } from "./magic-line";
 
 
 export class SolverAnimator {
@@ -25,6 +26,13 @@ export class SolverAnimator {
     view: HTMLElement;
     slider?: HTMLInputElement;
 
+    lineGroup: THREE.Group = new THREE.Group();
+    lightGroup: THREE.Group = new THREE.Group();
+    cubeGroup: THREE.Group = new THREE.Group();
+
+    isDrawGreenLine: boolean = true;
+    isDrawRedLine: boolean = false;
+
     public constructor(view: HTMLElement) {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -36,8 +44,15 @@ export class SolverAnimator {
         this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         this.directionalLight.position.set(5, 10, 7.5);
         this.ambientLight = new THREE.AmbientLight(0xffffff, 2);
-        this.scene.add(this.directionalLight);
-        this.scene.add(this.ambientLight);
+        this.lineGroup = new THREE.Group();
+
+        this.scene.add(this.lineGroup);
+        this.scene.add(this.lightGroup);
+        this.scene.add(this.cubeGroup);
+
+        this.lightGroup.add(this.directionalLight);
+        this.lightGroup.add(this.ambientLight);
+
         this.camera.position.set(0, 1, 5);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -101,16 +116,11 @@ export class SolverAnimator {
         this.cubeStateList = [];
     }
 
-    clearAllTextInScene() {
-        this.scene.clear();
-        this.scene.add(this.directionalLight);
-        this.scene.add(this.ambientLight);
-    }
 
     public setCube(cubeState: CubeState) {
         // this.currentCubeState = cubeState;
         this.textList = [];
-        this.clearAllTextInScene();
+        this.cubeGroup.clear();
         for(let i = 0; i < cubeState.content.length; i++) {
             for(let j = 0; j < cubeState.content.length; j++) {
                 for(let k = 0; k < cubeState.content.length; k++) {
@@ -118,22 +128,14 @@ export class SolverAnimator {
                     text.material = NumberText.textMaterial;
                     const [x,y,z] = this.ijkToWorldPosition(i, j, k, cubeState);
                     text.position.set(x,y,z);
-                    this.scene.add(text);
+                    this.cubeGroup.add(text);
                     this.textList.push(text);
                 }
             }
         }
 
-        const magicNumber = cubeState.calculateMagicNumber()
-        cubeState.iterateAndDo((arr: number[]) => {
-            let total = arr.reduce((a, b) => a + b, 0)
-            if(total === magicNumber) {
-                for(let i = 0; i < arr.length; i++) {
-                    const text = NumberText.get(arr[i].toString());
-                    text.material = NumberText.magicMaterial;
-                }
-            }
-        })
+
+        this.applyMagicLine(cubeState);
     }
 
 
@@ -188,21 +190,38 @@ export class SolverAnimator {
             }
         }
 
+        this.applyMagicLine(cubeState);
+    }
+
+
+    lastCubeState?: CubeState;
+    applyMagicLine(cubeState: CubeState){
+        if(this.lastCubeState === cubeState) return;
+        this.lastCubeState = cubeState;
+
+        this.lineGroup.clear();
         const magicNumber = cubeState.calculateMagicNumber()
+        const ctx = this;
         cubeState.iterateAndDo((arr: number[]) => {
             let total = arr.reduce((a, b) => a + b, 0)
-            if(total === magicNumber) {
-                for(let i = 0; i < arr.length; i++) {
-                    const text = NumberText.get(arr[i].toString());
-                    text.material = NumberText.magicMaterial;
-                }
+            if(this.isDrawGreenLine && total === magicNumber) {
+                const a = NumberText.get(arr[0].toString());
+                const b = NumberText.get(arr[arr.length-1].toString());
+                const line = MagicLine.createGreen(a.position, b.position);
+                ctx.lineGroup.add(line);
+            }
+            if(this.isDrawRedLine && total !== magicNumber) {
+                const a = NumberText.get(arr[0].toString());
+                const b = NumberText.get(arr[arr.length-1].toString());
+                const line = MagicLine.createRed(a.position, b.position);
+                ctx.lineGroup.add(line);
             }
         })
     }
 
 
+
     public setNormalizedTime(t: number){
-        // if(this.currentCubeState === undefined) return;
 
         const currentIdx = Math.floor(t * this.cubeStateList.length);
         if(currentIdx >= this.cubeStateList.length) return;
@@ -212,6 +231,9 @@ export class SolverAnimator {
         const from = cubeState.from!;
         const to = cubeState.to!;
         this.setTransparentCube(cubeState);
+
+        this.applyMagicLine(cubeState);
+
         
         const fromVal = cubeState.content[from[0]][from[1]][from[2]];
         const toVal = cubeState.content[to[0]][to[1]][to[2]];
