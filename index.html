@@ -15,10 +15,14 @@
     <title>Magic Cube Solver</title>
   </head>
   <body class="bg-zinc-900">
+
+    <!-- 3d View -->
     <div id="3d-view"></div>
-    <div
-      class="fixed top-0 right-0 grid grid-rows-2 gap-2 bg-zinc-900 p-2 rounded-bl-xl drop-shadow-lg"
-    >
+
+
+    <!-- Top Right GUI -->
+    <div class="fixed top-0 right-0 grid grid-rows-2 gap-2 bg-zinc-900 p-2 rounded-bl-xl drop-shadow-lg">
+      
       <div>
         <div class="text-sm text-slate-50 mb-1">Algorithm</div>
         <select
@@ -67,30 +71,26 @@
       <div class="text-sm text-slate-50" id="log-message">[Status]</div>
     </div> -->
 
-    <div
-      id="slider-container"
-      class="fixed bottom-0 gap-2 bg-zinc-900 p-2 drop-shadow-lg w-full hidden"
-    >
-      <div class="playpause flex scale-75">
-        <input
-          type="checkbox"
-          value="None"
-          id="playpause"
-          name="check"
-          hidden
-          checked
-        />
-        <label for="playpause" tabindex="1"></label>
+    <!-- Slider Player -->
+    <div id="slider-container" class="fixed bottom-0 drop-shadow-lg w-full flex flex-col">
+      <div class="bg-zinc-900 p-2 w-32">
+        <div class="text-sm text-slate-50 mb-1">Speed</div>
+        <input class="cursor-text text-sm rounded-lg pl-2.5 w-16 h-8 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="playbackspeed" type="number" value="1" min="0.1">
       </div>
-      <input
-        id="slider"
-        type="range"
-        class="w-full cursor-pointer"
-        min="0"
-        max="1"
-        step="0.00000001"
-        value="0"
-      />
+      <div class="flex gap-2 bg-zinc-900 p-2">
+        <div class="playpause flex scale-75">
+          <input type="checkbox" value="None" id="playpause" name="check" hidden checked/>
+          <label for="playpause" tabindex=1></label>
+        </div>  
+        <input id="slider" type="range" class="w-full cursor-pointer" min="0" max="1" step="0.00000001" value="0">
+      </div>
+    </div>
+
+    
+    <!-- Loading Bar -->
+    <div id="loading-container" class="fixed w-full h-full place-content-center hidden duration-150 ease-out-expo">
+      <div id="loading-container" class="fixed w-full h-full bg-zinc-900 opacity-50"></div>
+      <div class="animate-spin w-20 h-20 bg-red-500"></div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

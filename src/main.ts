@@ -1,12 +1,13 @@
-import "./style.css";
-import { CubeState } from "./magic-cube/cube-state";
-import { Solver } from "./magic-cube/solver";
-import { StochasticSolver } from "./magic-cube/solver/stochastic-solver";
-import { SteepestAscentSolver } from "./magic-cube/solver/steepestascent-solver";
-import { SidewaysMoveSolver } from "./magic-cube/solver/sidwaysmove-solver";
-import { SimulatedAnnealingSolver } from "./magic-cube/solver/simulatedannealing-solver";
-import { RandomRestartHillClimbingSolver } from "./magic-cube/solver/randomrestarthillclimbing-solver";
-import { SolverAnimator } from "./magic-cube-animator/solver-animator";
+import './style.css'
+import { CubeState } from './magic-cube/cube-state'
+import { Solver } from './magic-cube/solver'
+import { StochasticSolver } from './magic-cube/solver/stochastic-solver'
+import { SteepestAscentSolver } from './magic-cube/solver/steepestascent-solver'
+import { SidewaysMoveSolver } from './magic-cube/solver/sidwaysmove-solver'
+import { SimulatedAnnealingSolver } from './magic-cube/solver/simulatedannealing-solver'
+import { RandomRestartHillClimbingSolver } from './magic-cube/solver/randomrestarthillclimbing-solver'
+import { SolverAnimator } from './magic-cube-animator/solver-animator'
+import { LoadingSpinner as LoadingSpinner } from './components/loading-spinner'
 
 function readDegree() {
   return Number.parseInt(
@@ -57,6 +58,7 @@ const slider: HTMLInputElement = document.getElementById(
   "slider"
 )! as HTMLInputElement;
 solverAnimator.slider = slider;
+const loadingSpinner = new LoadingSpinner(document.getElementById("loading-container")!); 
 
 document.getElementById("algorithm-select")?.addEventListener("change", () => {
   selectedSolver = solverList[readAlgorithmIdx()]();
@@ -68,22 +70,23 @@ document.getElementById("start-button")?.addEventListener("click", async () => {
   playpauseCheckbox.checked = true;
   slider.value = "0";
   solverAnimator.clearAnimationStateList();
+  loadingSpinner.setActive(true);
 
   setTimeout(() => {
     console.log("Problem:");
     console.log(currentCube);
     const solver: Solver = selectedSolver!;
-    const result = solver.solve();
-    console.log("Solution:");
-    console.log(result);
-
-    sliderContainer?.classList.remove("hidden");
-    sliderContainer?.classList.add("flex");
-    slider?.setAttribute("value", "0");
-  }, 10);
-});
-
-document.getElementById("generate-button")?.addEventListener("click", () => {
+    const result = solver.solve()
+    console.log("Solution:")
+    console.log(result)
+  
+    sliderContainer?.classList.remove('hidden');
+    sliderContainer?.classList.add('flex');
+    slider?.setAttribute('value', '0');
+    loadingSpinner.setActive(false);
+  }, 10)
+})
+document.getElementById('generate-button')?.addEventListener('click', () => {
   const degree = readDegree();
   if (degree < 2) {
     alert("Degree must be greater than 1");
@@ -125,3 +128,13 @@ document.addEventListener("keydown", (e) => {
     document.querySelector(".playpause")?.dispatchEvent(new Event("click"));
   }
 });
+
+document.getElementById("playbackspeed")?.addEventListener("change", (e: any) => {
+  const val = e!.target!.value;
+
+  if(val <= 0) {
+    alert("Playback Speed must be bigger than 0");
+    e.target.value = solverAnimator.playbackSpeed;
+  }
+  solverAnimator.setPlaybackSpeed(val);
+})
