@@ -270,7 +270,10 @@ playpauseCheckbox?.addEventListener("change", (event) => {
 });
 
 slider.addEventListener("input", () => {
-  if (solverAnimator.isPlaying) solverAnimator.pause();
+  if (solverAnimator.isPlaying) {
+    playpauseCheckbox.checked = true;
+    solverAnimator.pause();
+  }
   const normalizedValue = Number.parseFloat(slider.value);
   solverAnimator.setNormalizedTime(normalizedValue);
 });
@@ -330,21 +333,16 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
       setCurrentParam(i, magicCubeData.param[i]);
     setDegree(magicCubeData.degree);
     statusInfo!.innerHTML = magicCubeData.statusInfo;
-    solverAnimator.cubeStateList = magicCubeData.cubeStateList.map(state => {
-      const stateObj = new CubeState();
-      stateObj.content = state.content;
-      stateObj.from = state.from;
-      stateObj.to = state.to;
-      return stateObj;
-    });
-    solverAnimator.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList.map(state => {
-      const stateObj = new CubeState();
-      stateObj.content = state.content;
-      stateObj.from = state.from;
-      stateObj.to = state.to;
-      return stateObj;
-    });
+    
+    magicCubeData.cubeStateList = magicCubeData.cubeStateList.map(CubeState.fromJson);
+    magicCubeData.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList.map(CubeState.fromJson);
+    magicCubeData.finalState = CubeState.fromJson(magicCubeData.finalState);
+    magicCubeData.initialState = CubeState.fromJson(magicCubeData.initialState);
+
+    solverAnimator.cubeStateList = magicCubeData.cubeStateList;
+    solverAnimator.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList;
     solverAnimator.cubeProbabilityList = magicCubeData.cubeProbablityList;
+
     solverAnimator.setCube(magicCubeData.finalState);
 
     lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState, magicCubeData.cubeStateSecondaryList, magicCubeData.cubeProbablityList, magicCubeData.initialState);
@@ -395,9 +393,13 @@ const showInitialButton = document.getElementById("show-initial-button");
 const showFinalButton = document.getElementById("show-final-button");
 
 showInitialButton?.addEventListener("click", () => {
+  playpauseCheckbox.checked = true;
+  solverAnimator.pause();
   solverAnimator.setTemporaryCube(lastMagicCubeData.initialState);
 });
 showFinalButton?.addEventListener("click", () => {
+  playpauseCheckbox.checked = true;
+  solverAnimator.pause();
   solverAnimator.setTemporaryCube(lastMagicCubeData.finalState);
 });
 
