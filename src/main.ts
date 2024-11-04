@@ -161,29 +161,34 @@ document.getElementById("start-button")?.addEventListener("click", () => {
       .toFixed(2)}`;
     let additionalMessage = "";
 
+    if (solver.getAdditionalInformation()["numIteration"]) {
+      additionalMessage +=
+        "<br>Iteration Count: " +
+        solver.getAdditionalInformation()["numIteration"];
+    }
     if (solver.getAdditionalInformation()["stuckFrequency"]) {
       additionalMessage +=
-        "Stuck frequency: " +
+        "<br>Stuck frequency: " +
         solver.getAdditionalInformation()["stuckFrequency"];
     }
     if (solver.getAdditionalInformation()["iterationCounter"]) {
       additionalMessage +=
-        "Iteration Count: " +
+        "<br>Iteration Count: " +
         solver.getAdditionalInformation()["iterationCounter"];
     }
-    if (solver.getAdditionalInformation()["iterationPerRestart"]){
+
+    if (solver.getAdditionalInformation()["iterationPerRestart"]) {
       let temp = solver.getAdditionalInformation()["iterationPerRestart"];
-      for(let i = 0 ; i < temp.length; i++){
-        if(i != 0){
+      for (let i = 0; i < temp.length; i++) {
+        if (i != 0) {
           additionalMessage += "<br>";
         }
         additionalMessage +=
-        "Iteration Count on "+ i +"-th restart: " +
-        temp[i];
+          "Iteration Count on " + i + "-th restart: " + temp[i];
       }
     }
 
-    statusInfo!.innerHTML = mandatoryMessage + "<br>" + additionalMessage;
+    statusInfo!.innerHTML = mandatoryMessage + additionalMessage;
 
     resultContainer?.classList.remove("hidden");
     sliderContainer?.classList.remove("hidden");
@@ -222,6 +227,7 @@ document.getElementById("generate-button")?.addEventListener("click", () => {
   setTimeout(() => {
     sliderContainer?.classList.add("hidden");
     sliderContainer?.classList.remove("flex");
+    resultContainer?.classList.add("hidden");
   }, 10);
 
   solverAnimator.load(() => {
