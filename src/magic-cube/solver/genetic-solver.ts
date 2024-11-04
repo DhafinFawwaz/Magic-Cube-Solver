@@ -6,13 +6,18 @@ export class GeneticSolver extends Solver {
     populationSize: number;
     maxIteration: number;
 
-    public constructor(degree: number, maxIteration: number, populationSize: number, onStateChange?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
+    bestInitialState?: CubeState;
+
+    onAnyIteration?: CubeStateChangeCallback;
+
+    public constructor(degree: number, maxIteration: number, populationSize: number, onStateChange?: CubeStateChangeCallback, onAnyIteration?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt) {
         super(onStateChange, evaluator);
         this.degree = degree;
         this.maxIteration = maxIteration;
         this.populationSize = populationSize;
 
         // Init cached stuff
+        this.onAnyIteration = onAnyIteration;
     }
 
     public process(): CubeState {
@@ -23,6 +28,10 @@ export class GeneticSolver extends Solver {
 
         const degree: number = this.degree;
         let population: CubeState[] = Array.from({ length: populationSize }, () => CubeState.createRandomCube(degree));
+
+        //
+        this.bestInitialState = population.reduce((best, current) => this.evaluator(current) > this.evaluator(best) ? current : best);
+        //
 
         let iteration: number = 0;
         while (true) {
@@ -42,9 +51,24 @@ export class GeneticSolver extends Solver {
 
             population.push(child1, child2, child3, child4);
 
-            const bestCube: CubeState = population.reduce((best, current) =>
-                this.evaluator(current) > this.evaluator(best) ? current : best
-            );
+            // const bestCube: CubeState = population.reduce((best, current) =>
+            //     this.evaluator(current) > this.evaluator(best) ? current : best
+            // );
+
+            const cubeArr = [];
+            for (let i = 0; i < population.length; i++) {
+                cubeArr.push({
+                    cube: population[i],
+                    score: this.evaluator(population[i])
+                });
+            }
+            cubeArr.sort((a, b) => b.score - a.score);
+            const bestCube = cubeArr[0].cube;
+            const medianCube = cubeArr[Math.floor(populationSize / 2)].cube;
+            // const medianCube = cubeArr[cubeArr.length-1].cube;
+            this.onStateChange?.(bestCube);
+            this.onAnyIteration?.(medianCube);
+
 
             if (bestCube.isMagicCube()) {
                 return bestCube;

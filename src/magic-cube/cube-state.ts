@@ -8,6 +8,14 @@ export class CubeState {
     public from?: [number, number, number];
     public to?: [number, number, number];
 
+    public static fromJson(json: any): CubeState {
+        let state = new CubeState();
+        state.content = json.content;
+        state.from = json.from;
+        state.to = json.to;
+        return state;
+    }
+
     /**
      * 
      * @param degree Degree of the cube

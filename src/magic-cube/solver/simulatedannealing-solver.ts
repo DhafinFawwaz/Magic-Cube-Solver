@@ -104,10 +104,6 @@ export class SimulatedAnnealingSolver extends Solver {
     this.temperature = this.temperature * this.coolingRate;
   }
 
-  private getStuckFrequency() {
-    return this.stuckFrequency;
-  }
-
   public getAdditionalInformation(): Object {
     return {
       stuckFrequency: this.stuckFrequency,

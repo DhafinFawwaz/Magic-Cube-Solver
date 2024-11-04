@@ -66,7 +66,7 @@ const solverList = [
   () => new RandomRestartHillClimbingSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
   () => new StochasticSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeStateSecondaryList.push(e)),
   () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeProbabilityList.push(e)),
-  () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e)),
+  () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e), (e) => solverAnimator.cubeStateSecondaryList.push(e)),
 ];
 
 let selectedSolver = solverList[0]();
@@ -121,6 +121,22 @@ function applyMagicLinePlot(solver: Solver) {
 
     switchPlotButton?.classList.remove("hidden");
 
+    plot1Title!.textContent = "x = iteration, y = score";
+    plot2Title!.textContent = "x = iteration, y = e^(ΔE/T)";
+
+  } else if(solver instanceof GeneticSolver) {
+    magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
+    magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
+    magicLinePlot.update();
+
+    magicLinePlot2.setX(generateArrayNumbers(1, solverAnimator.cubeStateSecondaryList.length + 1));
+    magicLinePlot2.setY(solverAnimator.cubeStateSecondaryList.map(state => solver.evaluator(state)));
+    magicLinePlot2.update();
+
+    switchPlotButton?.classList.remove("hidden");
+    
+    plot1Title!.textContent = "x = iteration, y = max score";
+    plot2Title!.textContent = "x = iteration, y = median score";
   } else {
     magicLinePlot.setX(generateArrayNumbers(1, solverAnimator.cubeStateList.length + 1));
     magicLinePlot.setY(solverAnimator.cubeStateList.map(state => solver.evaluator(state)));
@@ -140,16 +156,23 @@ document.getElementById("start-button")?.addEventListener("click", () => {
   solverAnimator.cubeStateList = [];
   solverAnimator.cubeStateSecondaryList = [];
   solverAnimator.cubeProbabilityList = [];
-
+  
   setTimeout(() => {
     console.log("Problem:");
     console.log(currentCube);
     const solver: Solver = solverList[readAlgorithmIdx()]();
-
+    
     const startTime = performance.now();
     const result = solver.solve();
     const executionTime = performance.now() - startTime;
     const magicAmount = Solver.evaluateMagicAmount(result);
+
+    
+    // Genetic only initial state
+    if(solver instanceof GeneticSolver) {
+      currentCube = solver.bestInitialState!;
+    }
+    //
 
     console.log("Solution:");
     console.log(result);
@@ -210,7 +233,8 @@ document.getElementById("start-button")?.addEventListener("click", () => {
       solverAnimator.cubeStateList,
       result,
       solverAnimator.cubeStateSecondaryList,
-      solverAnimator.cubeProbabilityList
+      solverAnimator.cubeProbabilityList,
+      currentCube
     );
   }, 10);
 });
@@ -246,7 +270,10 @@ playpauseCheckbox?.addEventListener("change", (event) => {
 });
 
 slider.addEventListener("input", () => {
-  if (solverAnimator.isPlaying) solverAnimator.pause();
+  if (solverAnimator.isPlaying) {
+    playpauseCheckbox.checked = true;
+    solverAnimator.pause();
+  }
   const normalizedValue = Number.parseFloat(slider.value);
   solverAnimator.setNormalizedTime(normalizedValue);
 });
@@ -306,24 +333,19 @@ document.getElementById("import-input")?.addEventListener("change", (e) => {
       setCurrentParam(i, magicCubeData.param[i]);
     setDegree(magicCubeData.degree);
     statusInfo!.innerHTML = magicCubeData.statusInfo;
-    solverAnimator.cubeStateList = magicCubeData.cubeStateList.map(state => {
-      const stateObj = new CubeState();
-      stateObj.content = state.content;
-      stateObj.from = state.from;
-      stateObj.to = state.to;
-      return stateObj;
-    });
-    solverAnimator.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList.map(state => {
-      const stateObj = new CubeState();
-      stateObj.content = state.content;
-      stateObj.from = state.from;
-      stateObj.to = state.to;
-      return stateObj;
-    });
+    
+    magicCubeData.cubeStateList = magicCubeData.cubeStateList.map(CubeState.fromJson);
+    magicCubeData.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList.map(CubeState.fromJson);
+    magicCubeData.finalState = CubeState.fromJson(magicCubeData.finalState);
+    magicCubeData.initialState = CubeState.fromJson(magicCubeData.initialState);
+
+    solverAnimator.cubeStateList = magicCubeData.cubeStateList;
+    solverAnimator.cubeStateSecondaryList = magicCubeData.cubeStateSecondaryList;
     solverAnimator.cubeProbabilityList = magicCubeData.cubeProbablityList;
+
     solverAnimator.setCube(magicCubeData.finalState);
 
-    lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState, magicCubeData.cubeStateSecondaryList, magicCubeData.cubeProbablityList);
+    lastMagicCubeData = new MagicCubeData(magicCubeData.algorithmIdx, magicCubeData.param, magicCubeData.degree, magicCubeData.statusInfo, magicCubeData.cubeStateList, magicCubeData.finalState, magicCubeData.cubeStateSecondaryList, magicCubeData.cubeProbablityList, magicCubeData.initialState);
 
     magicLinePlot.update();
     statusInfo!.innerHTML = magicCubeData.statusInfo;
@@ -364,3 +386,23 @@ switchPlotButton?.addEventListener("click", () => {
     enablePlot2();
   }
 })
+
+
+
+const showInitialButton = document.getElementById("show-initial-button");
+const showFinalButton = document.getElementById("show-final-button");
+
+showInitialButton?.addEventListener("click", () => {
+  playpauseCheckbox.checked = true;
+  solverAnimator.pause();
+  solverAnimator.setTemporaryCube(lastMagicCubeData.initialState);
+});
+showFinalButton?.addEventListener("click", () => {
+  playpauseCheckbox.checked = true;
+  solverAnimator.pause();
+  solverAnimator.setTemporaryCube(lastMagicCubeData.finalState);
+});
+
+
+const plot1Title = document.getElementById("plot-1-title");
+const plot2Title = document.getElementById("plot-2-title");
