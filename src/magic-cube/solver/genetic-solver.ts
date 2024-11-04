@@ -65,13 +65,10 @@ export class GeneticSolver extends Solver {
         const selectRandom = (): CubeState => {
             const randomValue = Math.random() * totalScore;
             let cumulativeScore = 0;
-            let idx = 0;
             for (const cube of population) {
                 cumulativeScore += evaluator(cube);
-                idx += 1;
 
                 if (cumulativeScore <= randomValue) {
-                    console.log("IDX", idx);
                     return cube;
                 }
             }
