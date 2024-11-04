@@ -41,6 +41,9 @@ export class MagicLinePlot extends Chart {
                 }
                 },
                 color: "white",
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
             }
         })
     }

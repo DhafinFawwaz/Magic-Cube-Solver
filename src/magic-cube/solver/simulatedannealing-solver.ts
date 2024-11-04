@@ -9,6 +9,7 @@ export class SimulatedAnnealingSolver extends Solver {
   private coolingRate: number;
   private current?: CubeState;
   private currentScore?: number;
+  private onDeltaEIteration?: (probability: number) => void;
   private stuckFrequency = 0;
 
   /**
@@ -23,6 +24,7 @@ export class SimulatedAnnealingSolver extends Solver {
   public constructor(
     cube: CubeState,
     onStateChange?: CubeStateChangeCallback,
+    onDeltaEIteration?: (probability: number) => void,
     evaluator: Evaluator = Solver.evaluateDeviationSqrt
   ) {
     super(onStateChange, evaluator);
@@ -30,6 +32,7 @@ export class SimulatedAnnealingSolver extends Solver {
     this.initialTemperature = 2e20;
     this.finalTemperature = 1;
     this.coolingRate = 0.999;
+    this.onDeltaEIteration = onDeltaEIteration;
 
     // Initialize cached properties
     this.initialCube.calculateMagicNumber();
@@ -69,6 +72,7 @@ export class SimulatedAnnealingSolver extends Solver {
       } else {
         // Accept the worse neighbor with a probability
         let probability = Math.exp(delta / this.temperature);
+        this.onDeltaEIteration?.(probability);
 
         if (Math.random() < probability) {
           // Assume: stuck frequncy is the number of times it gets to here

@@ -2,8 +2,10 @@ import { CubeState } from "../cube-state";
 import { CubeStateChangeCallback, Evaluator, Solver } from "../solver";
 
 export class StochasticSolver extends Solver {
-  public initialCube: CubeState;
-  stochasticNMax = 100000;
+
+    public initialCube: CubeState;
+    stochasticNMax = 100000;
+    onAnyIteration?: CubeStateChangeCallback;
 
   private iterationCount = 0;
 
@@ -11,10 +13,11 @@ export class StochasticSolver extends Solver {
     cube: CubeState,
     stochasticNMax: number,
     onStateChange?: CubeStateChangeCallback,
-    evaluator: Evaluator = Solver.evaluateDeviationSqrt
+    onAnyIteration?: CubeStateChangeCallback, evaluator: Evaluator = Solver.evaluateDeviationSqrt
   ) {
     super(onStateChange, evaluator);
     this.initialCube = cube;
+        this.onAnyIteration = onAnyIteration;
 
     // Init cached stuff
     this.stochasticNMax = stochasticNMax;
@@ -27,29 +30,24 @@ export class StochasticSolver extends Solver {
     let startTime = performance.now();
     const { evaluator, onStateChange } = this;
 
-    let current = this.initialCube.getCopy();
-    let nMax = this.stochasticNMax;
-    let iteration = 0;
-    while (!current.isMagicCube() && iteration < nMax) {
-      iteration++;
-      const neighbor = current.getRandomSuccessor();
+        let current = this.initialCube.getCopy()
+        let nMax = this.stochasticNMax
+        let iteration = 0
+        while (!current.isMagicCube() && iteration < nMax) {
+            iteration++;
+            const neighbor = current.getRandomSuccessor()
+            
+            if (evaluator(neighbor) > evaluator(current)) {
+                current = neighbor
+                onStateChange?.(neighbor)
+                this.log(startTime, current, evaluator, iteration, nMax)
+            }
+            this.onAnyIteration?.(current)
+        }
 
-      if (evaluator(neighbor) > evaluator(current)) {
-        current = neighbor;
-        onStateChange?.(neighbor);
-        this.log(startTime, current, evaluator, iteration, nMax);
-      }
+        this.iterationCount = iteration;
+
+        this.log(startTime, current, evaluator, iteration, nMax)
+        return current
     }
-
-    this.iterationCount = iteration;
-
-    this.log(startTime, current, evaluator, iteration, nMax);
-    return current;
-  }
-
-  public getAdditionalInformation() {
-    return {
-      numIteration: this.iterationCount,
-    };
-  }
 }

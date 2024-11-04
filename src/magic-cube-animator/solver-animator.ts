@@ -19,6 +19,9 @@ export class SolverAnimator {
 
     currentCubeState?: CubeState;
     cubeStateList: CubeState[] = [];
+    cubeStateSecondaryList: CubeState[] = [];
+    cubeProbabilityList: number[] = [];
+
     view: HTMLElement;
     slider?: HTMLInputElement;
 
