@@ -13,6 +13,9 @@ export default {
         'out-back': 'cubic-bezier(0.175, 2.885, 0.32, 1.275)',
         'out-back-little': 'cubic-bezier(0.175, 2.885, 0.32, 1.275)',
       },
+      scale: {
+        '250': 'scale(250%)'
+      }
     },
   },
   plugins: [],

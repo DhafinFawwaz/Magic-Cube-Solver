@@ -1,4 +1,3 @@
-import './style.css'
 import { CubeState } from './magic-cube/cube-state'
 import { Solver } from './magic-cube/solver'
 import { StochasticSolver } from './magic-cube/solver/stochastic-solver'

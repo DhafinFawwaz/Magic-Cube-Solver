@@ -23,9 +23,9 @@ export class SimulatedAnnealingSolver extends Solver {
   ) {
     super(onStateChange, evaluator);
     this.initialCube = cube;
-    this.initialTemperature = 1e5;
-    this.finalTemperature = 1;
-    this.coolingRate = 0.99;
+    this.initialTemperature = 2000;
+    this.finalTemperature = 0;
+    this.coolingRate = 0.999;
 
     // Initialize cached properties
     this.initialCube.calculateMagicNumber();

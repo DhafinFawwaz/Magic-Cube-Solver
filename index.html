@@ -12,6 +12,8 @@
       rel="stylesheet"
     />
 
+    <link rel="stylesheet" href="public/style.css" crossorigin />
+
     <title>Magic Cube Solver</title>
   </head>
   <body class="bg-zinc-900">
@@ -72,10 +74,10 @@
     </div> -->
 
     <!-- Slider Player -->
-    <div id="slider-container" class="fixed bottom-0 drop-shadow-lg w-full flex flex-col">
+    <div id="slider-container" class="fixed bottom-0 drop-shadow-lg w-full flex flex-col hidden">
       <div class="bg-zinc-900 p-2 w-32">
         <div class="text-sm text-slate-50 mb-1">Speed</div>
-        <input class="cursor-text text-sm rounded-lg pl-2.5 w-16 h-8 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="playbackspeed" type="number" value="1" min="0.1">
+        <input class="cursor-text text-sm rounded-lg pl-2.5 w-full h-8 bg-zinc-800 text-slate-50 outline-none hover:ring-1 ring-indigo-700 ring-inset" id="playbackspeed" type="number" value="1" min="0.1">
       </div>
       <div class="flex gap-2 bg-zinc-900 p-2">
         <div class="playpause flex scale-75">
@@ -90,7 +92,9 @@
     <!-- Loading Bar -->
     <div id="loading-container" class="fixed w-full h-full place-content-center hidden duration-150 ease-out-expo">
       <div id="loading-container" class="fixed w-full h-full bg-zinc-900 opacity-50"></div>
-      <div class="animate-spin w-20 h-20 bg-red-500"></div>
+      <div class="animate-spin">
+        <svg class="scale-250" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="white"><path fill-rule="evenodd" d="M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14m0 3c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" clip-rule="evenodd" opacity="0.2"/><path d="M2 12C2 6.477 6.477 2 12 2v3a7 7 0 0 0-7 7z"/></g></svg>
+      </div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>
