@@ -16,9 +16,9 @@ export class RandomRestartHillClimbingSolver extends Solver {
    */
   public constructor(
     cube: CubeState,
+    maxRestarts: number = 1000,
     onStateChange?: CubeStateChangeCallback,
     evaluator: Evaluator = Solver.evaluateDeviationSqrt,
-    maxRestarts: number = 1000
   ) {
     super(onStateChange, evaluator);
     this.initialCube = cube;

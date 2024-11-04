@@ -32,8 +32,8 @@ solverAnimator.load(() => {
 
 const solverList = [
   () => new SteepestAscentSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
-  () => new SidewaysMoveSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
-  () => new RandomRestartHillClimbingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
+  () => new SidewaysMoveSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
+  () => new RandomRestartHillClimbingSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
   () => new StochasticSolver(currentCube, readCurrentParam(0), (e) => solverAnimator.onStateChange(e)),
   () => new SimulatedAnnealingSolver(currentCube, (e) => solverAnimator.onStateChange(e)),
   () => new GeneticSolver(readDegree(), readCurrentParam(0), readCurrentParam(1), (e) => solverAnimator.onStateChange(e)),
