@@ -50,4 +50,10 @@ export class StochasticSolver extends Solver {
         this.log(startTime, current, evaluator, iteration, nMax)
         return current
     }
+
+    public getAdditionalInformation() {
+      return {
+        numIteration: this.iterationCount,
+      };
+    }
 }

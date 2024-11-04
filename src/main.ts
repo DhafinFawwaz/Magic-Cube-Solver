@@ -351,12 +351,10 @@ const plot2Container = document.getElementById("plot-2-container");
 function enablePlot1() {
   plot1Container?.classList.remove("hidden");
   plot2Container?.classList.add("hidden");
-  console.log("enable plot 1")
 }
 function enablePlot2() {
   plot1Container?.classList.add("hidden");
   plot2Container?.classList.remove("hidden");
-  console.log("enable plot 2")
 }
 
 switchPlotButton?.addEventListener("click", () => {
